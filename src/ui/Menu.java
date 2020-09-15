@@ -1,6 +1,8 @@
 package ui;
 
 import java.util.Scanner;
+
+import exceptions.restaurantExistsException;
 import model.Controller;
 
 public class Menu {
@@ -57,7 +59,7 @@ public class Menu {
 	public void decisionSwitch(int dec) {
 		switch(dec) {
 		case 1:
-			//registerRestaurant();
+			registerRestaurant();
 		break;
 		case 2:
 			//registerProduct();
@@ -108,5 +110,25 @@ public class Menu {
 			System.out.println("Please enter a valid option");
 		break;
 		}
+	}
+	public void registerRestaurant() {
+		System.out.println("Type in the new restaurant's name");
+		String name = sc.nextLine();
+		System.out.println("Type in the new restaurant's NIT");
+		String nit = sc.nextLine();
+		try {
+			checkNit(nit);
+			System.out.println("Type in the new restaurant's administrator's name");
+			String adminName = sc.nextLine();
+			control.registerRestaurant(name, nit,adminName);
+		}
+		catch(restaurantExistsException e)
+		{
+			System.err.println("There is a restaurant already registered with that NIT");
+		}
+		
+	}
+	private void checkNit(String nit) throws restaurantExistsException{
+	control.checkNit(nit);	
 	}
 }
