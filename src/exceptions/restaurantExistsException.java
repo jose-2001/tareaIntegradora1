@@ -1,5 +1,9 @@
 package exceptions;
 
-public class restaurantExistsException extends Exception {
+/**
+ * @author josea
+ *
+ */
+public class RestaurantExistsException extends Exception {
 
 }

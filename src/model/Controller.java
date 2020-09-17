@@ -1,14 +1,7 @@
 package model;
-
 import java.util.List;
-
-import exceptions.restaurantExistsException;
-
+import exceptions.RestaurantExistsException;
 import java.util.ArrayList;
-import model.Client;
-import model.Restaurant;
-import model.Order;
-import model.Product;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -17,6 +10,7 @@ import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 public class Controller {
@@ -27,7 +21,7 @@ public class Controller {
 	public static final String ORDERS_FILE_NAME = "data/orders.ord";
 	public static final String PRODUCTS_FILE_NAME = "data/products.pro";
 
-	// attributes
+	// relations
 
 	private List<Restaurant> restaurants;
 	private List<Client> clients;
@@ -102,30 +96,90 @@ public class Controller {
 		}
 	}
 
-	
+	/**
+	 * 
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	@SuppressWarnings("unchecked")
 	private void loadRestaurants() throws IOException, ClassNotFoundException {
 		File f = new File(RESTAURANTS_FILE_NAME);
 	      ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
 	      restaurants = (ArrayList<Restaurant>)ois.readObject();
 	      ois.close();
 	}
+	/**
+	 * 
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	@SuppressWarnings("unchecked")
 	private void loadClients() throws IOException, ClassNotFoundException {
 		File f = new File(CLIENTS_FILE_NAME);
 	      ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
 	      clients = (ArrayList<Client>)ois.readObject();
 	      ois.close();
 	}
+	/**
+	 * 
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	@SuppressWarnings("unchecked")
 	private void loadProducts() throws IOException, ClassNotFoundException {
 		File f = new File(PRODUCTS_FILE_NAME);
 	      ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
 	      products = (ArrayList<Product>)ois.readObject();
 	      ois.close();
 	}
+	/**
+	 * 
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	@SuppressWarnings("unchecked")
 	private void loadOrders() throws IOException, ClassNotFoundException {
 		File f = new File(ORDERS_FILE_NAME);
 	      ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
 	      orders = (ArrayList<Order>)ois.readObject();
 	      ois.close();
+	}
+	/**
+	 * 
+	 * @throws IOException
+	 */
+	private void saveRestaurants() throws IOException{
+		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(RESTAURANTS_FILE_NAME));
+	    oos.writeObject(restaurants);
+	    oos.close();
+	}
+	/**
+	 * 
+	 * @throws IOException
+	 */
+	private void saveClients() throws IOException{
+		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(CLIENTS_FILE_NAME));
+	    oos.writeObject(clients);
+	    oos.close();
+	}
+	/**
+	 * 
+	 * @throws IOException
+	 */
+	private void saveOrders() throws IOException{
+		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(ORDERS_FILE_NAME));
+	    oos.writeObject(orders);
+	    oos.close();
+	}
+	/**
+	 * 
+	 * @throws FileNotFoundException 
+	 * @throws IOException
+	 */
+	private void saveProducts() throws FileNotFoundException, IOException {
+		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(PRODUCTS_FILE_NAME));
+	    oos.writeObject(products);
+	    oos.close();
 	}
 
 	/**
@@ -184,8 +238,14 @@ public class Controller {
 		orders = ord;
 	}
 
-
-	public void registerRestaurant(String name, String nit, String adminName) {
+	/**
+	 * 
+	 * @param name
+	 * @param nit
+	 * @param adminName
+	 * @throws FileNotFoundException, IOException 
+	 */
+	public void registerRestaurant(String name, String nit, String adminName) throws FileNotFoundException, IOException {
 		Restaurant toAdd = new Restaurant(name, nit, adminName);
 		if(restaurants.isEmpty()) {
 			restaurants.add(toAdd);
@@ -198,18 +258,103 @@ public class Controller {
 			}
 			((ArrayList<Restaurant>)restaurants).add(i,toAdd);
 		}
+		saveRestaurants();
 	}
 
-
-	public void checkNit(String nit) throws restaurantExistsException {
+	/**
+	 * 
+	 * @param nit
+	 * @throws RestaurantExistsException
+	 */
+	public boolean checkNit(String nit) {
+		boolean found=false;
 		for(int i=0; i<restaurants.size();i++)
 		{
 			if(restaurants.get(i).getNit().equals(nit))
 			{
-				throw new restaurantExistsException();
+				found=true;
 			}
 		}
-		
+		return found;
+	}
+	
+	/**
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public boolean checkProdCode(String c) {
+		boolean found=false;
+		for(int i=0; i<products.size();i++)
+		{
+			if(products.get(i).getCode().equals(c))
+			{
+				found=true;
+			}
+		}
+		return found;
+	}
+	/**
+	 * 
+	 * @param name
+	 * @param code
+	 * @param description
+	 * @param cost
+	 * @param restNit
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public void registerProduct(String name, String code, String description, double cost, String restNit) throws FileNotFoundException, IOException {
+		Product toAdd = new Product(code, name, description, cost,restNit);
+		if(products.isEmpty()) {
+			products.add(toAdd);
+		}
+		else {
+			int i =0;
+			while(toAdd.getCode().compareTo(products.get(i).getCode())>0)
+			{
+				i++;
+			}
+			((ArrayList<Product>)products).add(i,toAdd);
+		}
+		saveProducts();
+	}
+
+	/**
+	 * 
+	 * @param idn
+	 * @return
+	 */
+	public boolean checkId(String idn) {
+		boolean found=false;
+		for(int i=0; i<clients.size();i++)
+		{
+			if(clients.get(i).getIdNum().equals(idn))
+			{
+				found=true;
+			}
+		}
+		return found;
+	}
+
+	public void registerClient(String idn, String fn,String sn, String p, String a, int idt) throws IOException {
+		Client toAdd = new Client(idn, fn,sn, p, a, idt);
+		if(clients.isEmpty()) {
+			clients.add(toAdd);
+		}
+		else {
+			int i =0;
+			while(toAdd.getSurName().compareTo(clients.get(i).getSurName())>0)
+			{
+				i++;
+			}
+			while(toAdd.getFirstName().compareTo(clients.get(i).getFirstName())>0)
+			{
+				i++;
+			}
+			((ArrayList<Client>)clients).add(i,toAdd);
+		}
+		saveClients();
 	}
 
 }
