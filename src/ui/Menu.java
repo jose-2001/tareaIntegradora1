@@ -3,8 +3,12 @@ package ui;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
-
+import java.util.ArrayList;
+import java.util.List;
+import exceptions.ClientDoesNotExistException;
 import exceptions.ClientExistsException;
+import exceptions.ProductDoesNotBelongToRestaurant;
+import exceptions.ProductDoesNotExistException;
 import exceptions.ProductExistsException;
 import exceptions.RestaurantDoesNotExistException;
 import exceptions.RestaurantExistsException;
@@ -70,10 +74,10 @@ public class Menu {
 			registerProduct();
 		break;
 		case 3:
-			//registerClient();
+			registerClient();
 		break;
 		case 4:
-			//registerOrder();
+			registerOrder();
 		break;
 		case 5:
 			//updateRestaurant();
@@ -155,7 +159,7 @@ public class Menu {
 		System.out.println("Type in the NIT of the restaurant offering this product");
 		String rn = sc.nextLine();
 		try {
-			prodCheckNit(rn);
+			otherCheckNit(rn);
 			System.out.println("Type in the new product's code");
 			String cd = sc.nextLine();
 			checkCode(cd);
@@ -190,7 +194,7 @@ public class Menu {
 	 * @param nit the NIT to be checked
 	 * @throws RestaurantExistsException if there is a restaurant registered with that NIT
 	 */
-	public void prodCheckNit(String nit) throws RestaurantDoesNotExistException{
+	public void otherCheckNit(String nit) throws RestaurantDoesNotExistException{
 		if(!control.checkNit(nit))
 			{
 			throw new RestaurantDoesNotExistException();
@@ -227,7 +231,7 @@ public class Menu {
 		System.out.println("Type in the new client's ID number");
 		String idn = sc.nextLine();
 		try {
-			checkId(idn);
+			clientCheckId(idn);
 			System.out.println("Type in the new client's first name");
 			String fn = sc.nextLine();
 			System.out.println("Type in the new client's first surname");
@@ -250,11 +254,68 @@ public class Menu {
 			System.err.println("Client data could not be saved properly");
 		}
 	}
-	public void checkId(String idn) throws ClientExistsException {
+	public void clientCheckId(String idn) throws ClientExistsException {
 		boolean found=control.checkId(idn); 
 		if(found)
 		{
 			throw new ClientExistsException();
 		}
+	}
+	public void registerOrder() {
+		System.out.println("Type in the ID number of the client making the new order");
+		String idn = sc.nextLine();
+		String nitRes="";
+		try {
+			orderCheckId(idn);
+			System.out.println("Type in the NIT of the restaurant to which this order is being made");
+			nitRes = sc.nextLine();
+			otherCheckNit(nitRes);
+		}
+		catch(ClientDoesNotExistException e)
+		{
+			System.err.println("A client with that ID number is not registered");
+		}
+		catch(RestaurantDoesNotExistException e)
+		{
+			System.err.println("A restaurant with that NIT is not registered");
+		}
+		boolean contin=true;
+		List<String> codes = new ArrayList<String>();
+		List<Integer> quantities = new ArrayList<Integer>();
+		while(contin)
+		{
+			System.out.println("Type in the code of a product to order");
+			showProductsFromRestaurant(nitRes);
+			String codeOfProdToAdd =sc.nextLine();
+			try {
+				checkProdToAdd(nitRes,codeOfProdToAdd);
+				codes.add(codeOfProdToAdd);
+				System.out.println("Type in how many/much of this product is to be ordered");
+				int quant = Integer.parseInt(sc.nextLine());
+				quantities.add(quant);
+			}
+			catch(ProductDoesNotBelongToRestaurant e)
+			{
+				System.err.println("This product does not belong to the restaurant to which the order is being made");
+			}
+			catch(ProductDoesNotExistException e)
+			{
+				System.err.println("A product with this code is not registered");
+			}
+		}
+	}
+	public void orderCheckId(String idn)throws ClientDoesNotExistException {
+		boolean found=control.checkId(idn); 
+		if(!found)
+		{
+			throw new ClientDoesNotExistException();
+		}
+	}
+	public void showProductsFromRestaurant(String nitRes) {
+		System.out.println(control.showProductsFromRestaurant(nitRes));
+		
+	}
+	public void checkProdToAdd(String restNit, String codeOfProd) throws ProductDoesNotBelongToRestaurant, ProductDoesNotExistException{
+		control.checkProdToAdd( restNit, codeOfProd);
 	}
 }

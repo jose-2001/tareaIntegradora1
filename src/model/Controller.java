@@ -1,5 +1,8 @@
 package model;
 import java.util.List;
+
+import exceptions.ProductDoesNotBelongToRestaurant;
+import exceptions.ProductDoesNotExistException;
 import exceptions.RestaurantExistsException;
 import java.util.ArrayList;
 import java.io.FileReader;
@@ -355,6 +358,34 @@ public class Controller {
 			((ArrayList<Client>)clients).add(i,toAdd);
 		}
 		saveClients();
+	}
+
+	public String showProductsFromRestaurant(String nitRes) {
+		String msg="";
+		for(int i=0;i<products.size();i++)
+		{
+			if(products.get(i).getRestNit().equals(nitRes))
+			{
+				msg+="Name: "+products.get(i).getName()+". Code: "+products.get(i).getCode()+"\n";
+			}
+		}
+		return msg;
+	}
+
+	public void checkProdToAdd(String restNit, String codeOfProd) throws ProductDoesNotBelongToRestaurant, ProductDoesNotExistException {
+		boolean found =false;
+		for(int i=0;i<products.size();i++)
+		{
+			if(products.get(i).getCode().equals(codeOfProd))
+			{
+				found=true;
+				if(!(products.get(i).getRestNit().equals(restNit)))
+				{
+					throw new ProductDoesNotBelongToRestaurant();
+				}
+			}
+		}
+		throw new ProductDoesNotExistException();
 	}
 
 }
