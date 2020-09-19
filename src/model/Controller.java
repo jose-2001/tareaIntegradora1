@@ -4,7 +4,9 @@ import java.util.List;
 import exceptions.ProductDoesNotBelongToRestaurant;
 import exceptions.ProductDoesNotExistException;
 import exceptions.RestaurantExistsException;
+import exceptions.ProductsAreNotOfTheSameRestaurantException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -339,7 +341,16 @@ public class Controller {
 		}
 		return found;
 	}
-
+	/**
+	 * 
+	 * @param idn
+	 * @param fn
+	 * @param sn
+	 * @param p
+	 * @param a
+	 * @param idt
+	 * @throws IOException
+	 */
 	public void registerClient(String idn, String fn,String sn, String p, String a, int idt) throws IOException {
 		Client toAdd = new Client(idn, fn,sn, p, a, idt);
 		if(clients.isEmpty()) {
@@ -359,7 +370,11 @@ public class Controller {
 		}
 		saveClients();
 	}
-
+	/**
+	 * 
+	 * @param nitRes
+	 * @return
+	 */
 	public String showProductsFromRestaurant(String nitRes) {
 		String msg="";
 		for(int i=0;i<products.size();i++)
@@ -371,7 +386,13 @@ public class Controller {
 		}
 		return msg;
 	}
-
+	/**
+	 * 
+	 * @param restNit
+	 * @param codeOfProd
+	 * @throws ProductDoesNotBelongToRestaurant
+	 * @throws ProductDoesNotExistException
+	 */
 	public void checkProdToAdd(String restNit, String codeOfProd) throws ProductDoesNotBelongToRestaurant, ProductDoesNotExistException {
 		boolean found =false;
 		for(int i=0;i<products.size();i++)
@@ -385,7 +406,192 @@ public class Controller {
 				}
 			}
 		}
-		throw new ProductDoesNotExistException();
+		if(!found)
+		{throw new ProductDoesNotExistException();}
+	}
+	/**
+	 * 
+	 * @param code
+	 * @param idn
+	 * @param nitRes
+	 * @param codes
+	 * @param quantities
+	 * @param date
+	 * @throws ProductsAreNotOfTheSameRestaurantException
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public void registerOrder(String code,String idn, String nitRes, List<String> codes, List<Integer> quantities, Date date) throws ProductsAreNotOfTheSameRestaurantException,FileNotFoundException, IOException {
+		ArrayList<Product> prodsOfOrder = new ArrayList<Product>();
+		for(int i=0;i<codes.size(); i++)
+		{
+			for(int j=0;j<products.size();j++) {
+				if(codes.get(i).equals(products.get(j).getCode()))
+				{
+					prodsOfOrder.add(products.get(j));
+				}
+			}
+		}
+		checkProdsOfSameRes(nitRes, prodsOfOrder);
+		Order toAdd = new Order(code, date, idn, nitRes,prodsOfOrder, quantities);
+		orders.add(toAdd);
+		saveOrders();
+	}
+	/**
+	 * 
+	 * @param nitRes
+	 * @param prodsOfOrder
+	 * @throws productsAreNotOfTheSameRestaurantException 
+	 */
+	public void checkProdsOfSameRes(String nitRes, ArrayList<Product> prodsOfOrder) throws ProductsAreNotOfTheSameRestaurantException {
+		for (int i = 0; i < prodsOfOrder.size(); i++) {
+			if(!(prodsOfOrder.get(i).getRestNit().equals(nitRes)))
+			{
+				throw new ProductsAreNotOfTheSameRestaurantException();
+			}
+		}
+		
+	}
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean checkIfCodeIsRepeated(String code) {
+		boolean result=false;
+		for (int i = 0; i < orders.size(); i++) {
+			if(orders.get(i).getCode().equals(code))
+			{
+				result=true;
+			}
+		}
+		return result;
 	}
 
+	/**
+	 * 
+	 * @param restNit
+	 * @param newAdminName
+	 * @throws IOException
+	 */
+	public void updateRestaurantAdminName(String restNit, String newAdminName) throws IOException {
+		for (int i = 0; i < restaurants.size(); i++) {
+			if(restaurants.get(i).getNit().equals(restNit))
+			{
+				restaurants.get(i).setAdminName(newAdminName);
+			}
+		}
+		saveRestaurants();
+	}
+	/**
+	 * 
+	 * @param restNit
+	 * @param newRestName
+	 * @throws IOException
+	 */
+	public void updateRestaurantName(String restNit, String newRestName) throws IOException {
+		for (int i = 0; i < restaurants.size(); i++) {
+			if(restaurants.get(i).getNit().equals(restNit))
+			{
+				restaurants.get(i).setName(newRestName);
+			}
+		}
+		saveRestaurants();
+	}
+	/**
+	 * 
+	 * @param restNit
+	 * @param newRestNit
+	 * @throws IOException
+	 */
+	public void updateRestaurantNit(String restNit, String newRestNit) throws IOException {
+		for (int i = 0; i < orders.size(); i++) {
+			if(orders.get(i).getRestNit().equals(restNit))
+			{
+				orders.get(i).setRestNit(newRestNit);
+			}
+		}
+		for (int i = 0; i < products.size(); i++) {
+			if(products.get(i).getRestNit().equals(restNit))
+			{
+				products.get(i).setRestNit(newRestNit);
+			}
+		}
+		for (int i = 0; i < restaurants.size(); i++) {
+			if(restaurants.get(i).getNit().equals(restNit))
+			{
+				restaurants.get(i).setNit(newRestNit);
+			}
+		}
+		saveOrders();
+		saveProducts();
+		saveRestaurants();
+	}
+
+	public void updateClientAdress(String idn, String newClientAddress)throws IOException {
+		for (int i = 0; i < orders.size(); i++) {
+			if(clients.get(i).getIdNum().equals(idn))
+			{
+				clients.get(i).setAddress(newClientAddress);
+			}
+		}
+		saveClients();
+	}
+
+	public void updateClientFirstName(String idn, String newClientFirstName) throws IOException {
+		for (int i = 0; i < orders.size(); i++) {
+			if(clients.get(i).getIdNum().equals(idn))
+			{
+				clients.get(i).setFirstName(newClientFirstName);
+			}
+		}
+		saveClients();
+	}
+
+	public void updateClientSurname(String idn, String newClientSurname) throws IOException {
+		for (int i = 0; i < orders.size(); i++) {
+			if(clients.get(i).getIdNum().equals(idn))
+			{
+				clients.get(i).setSurName(newClientSurname);
+			}
+		}
+		saveClients();
+	}
+
+	public void updateClientIdNum(String idn, String newClientIdNum)  throws IOException {
+		for (int i = 0; i < orders.size(); i++) {
+			if(orders.get(i).getClientID().equals(idn))
+			{
+				orders.get(i).setClientID(newClientIdNum);
+			}
+		}
+
+		for (int i = 0; i < clients.size(); i++) {
+			if(clients.get(i).getIdNum().equals(idn))
+			{
+				clients.get(i).setIdNum(newClientIdNum);
+			}
+		}
+		saveOrders();
+		saveClients();
+	}
+
+	public void updateClientIdType(String idn, int idt)  throws IOException {
+		for (int i = 0; i < orders.size(); i++) {
+			if(clients.get(i).getIdNum().equals(idn))
+			{
+				clients.get(i).setIdType(idt);
+			}
+		}
+		saveClients();
+	}
+
+	public void updateClientPhone(String idn, String newClientPhone) throws IOException {
+		for (int i = 0; i < orders.size(); i++) {
+			if(clients.get(i).getIdNum().equals(idn))
+			{
+				clients.get(i).setPhone(newClientPhone);
+			}
+		}
+		saveClients();
+	}
 }

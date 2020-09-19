@@ -106,7 +106,6 @@ public class Product {
 	 */
 	public void setRestNit(String restNit) {
 		this.restNit = restNit;
-	}
-	
+	}	
 	
 }

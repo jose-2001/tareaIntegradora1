@@ -3,8 +3,13 @@ package model;
 import java.util.Date;
 import java.util.List;
 
+//public class Order implements Comparable<Order>{
 public class Order {
 	
+	enum State
+	{
+		SOLICITED, IN_PROGRESS,SENT,DELIVERED
+	}
 	//attributes
 	private String code;
 	private Date dateAndTime;
@@ -12,7 +17,7 @@ public class Order {
 	private String restNit;
 	private List<Product> products;
 	private List<Integer> quantities;
-	
+	private State state;
 	/**
 	 * @param code
 	 * @param dateAndTime
@@ -29,6 +34,7 @@ public class Order {
 		this.restNit = restNit;
 		this.products = products;
 		this.quantities = quantities;
+		state=State.SOLICITED;
 	}
 
 	/**
@@ -115,4 +121,42 @@ public class Order {
 		this.quantities = quantities;
 	}
 
+	/**
+	 * @return the state
+	 */
+	public State getState() {
+		return state;
+	}
+
+	/**
+	 * @param state the state to set
+	 */
+	public void setState(State state) {
+		this.state = state;
+	}
+
+/*	@Override
+	public int compareTo(Order o) {
+		int comp=0;
+		comp=getRestNit().compareTo(o.getRestNit());
+		if(comp==0)
+		{
+			comp=getClientID().compareTo(o.getClientID());
+			if(comp<0)
+			{
+				comp=1;
+			}
+			if(comp>0)
+			{
+				comp=-1;
+			}
+		}
+		if(comp==0)
+		{
+			comp=getDateAndTime().compareTo(o.getDateAndTime());
+		}
+		
+		return comp;
+	}
+*/
 }

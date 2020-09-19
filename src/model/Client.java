@@ -106,16 +106,25 @@ public class Client {
 		this.address = address;
 	}
 	/**
-	 * @return the idType
+	 * @return an int representing the idType
 	 */
-	public IdType getIdType() {
-		return idType;
+	public int getIdType() {
+		if(idType==IdType.IC){return 1;}
+		else {if(idType==IdType.CC){return 2;}	
+		else{if(idType==IdType.FC){return 3;}
+		else{return 4;}}}
 	}
 	/**
 	 * @param idType the idType to set
 	 */
-	public void setIdType(IdType idType) {
-		this.idType = idType;
+	public void setIdType(int idt) {
+		switch(idt){
+		case 1: idType=IdType.IC;break;
+		case 2: idType=IdType.CC;break;
+		case 3: idType=IdType.FC;break;
+		case 4: idType=IdType.P;break;
+		}
+		
 	}
 	
 }
