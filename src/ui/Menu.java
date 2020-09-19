@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import exceptions.ClientDoesNotExistException;
 import exceptions.ClientExistsException;
+import exceptions.OrderDoesNotExistException;
 import exceptions.ProductDoesNotBelongToRestaurant;
 import exceptions.ProductDoesNotExistException;
 import exceptions.ProductExistsException;
@@ -85,13 +86,13 @@ public class Menu {
 			updateRestaurant();
 			break;
 		case 6:
-			//updateProduct();
+			updateProduct();
 			break;
 		case 7:
 			updateClient();
 			break;
 		case 8:
-			// updateOrder();
+			 updateOrder();
 			break;
 		case 9:
 			// reportOrders();
@@ -167,7 +168,7 @@ public class Menu {
 			otherCheckNit(rn);
 			System.out.println("Type in the new product's code");
 			String cd = sc.nextLine();
-			checkCode(cd);
+			prodCheckCode(cd);
 			System.out.println("Type in the new product's name");
 			String n = sc.nextLine();
 			System.out.println("Type in the new product's description");
@@ -210,11 +211,18 @@ public class Menu {
 	 * @throws ProductExistsException if there is a product registered with that
 	 *                                code
 	 */
-	public void checkCode(String c) throws ProductExistsException {
+	public void prodCheckCode(String c) throws ProductExistsException {
 		if (control.checkProdCode(c)) {
 			throw new ProductExistsException();
 		}
 	}
+	
+	public void otherCheckCode(String c) throws ProductDoesNotExistException {
+		if (!control.checkProdCode(c)) {
+			throw new ProductDoesNotExistException();
+		}
+	}
+
 
 	public void registerClient() {
 		int idt;
@@ -321,8 +329,7 @@ public class Menu {
 		} catch (ProductDoesNotExistException e) {
 			System.err.println("A product with this code is not registered");
 		} catch (ProductsAreNotOfTheSameRestaurantException e) {
-			System.err.println(
-					"One of the products of this order does not belong to the restaurant to which the order is being made");
+			System.err.println("One of the products of this order does not belong to the restaurant to which the order is being made");
 		} catch (FileNotFoundException e) {
 			System.err.println("The file where the Order data is to be saved could not be found");
 		} catch (IOException e) {
@@ -452,10 +459,10 @@ public class Menu {
 		String newAdminName = sc.nextLine();
 		try {
 			control.updateRestaurantAdminName(restNit, newAdminName);
+			System.out.println("Administrator name updated successfully");
 		} catch (IOException e) {
 			System.err.println("Restaurant data could not be saved properly");
 		}
-		System.out.println("Administrator name updated successfully");
 	}
 	/**
 	 * 
@@ -466,10 +473,10 @@ public class Menu {
 		String newRestName = sc.nextLine();
 		try {
 			control.updateRestaurantName(restNit, newRestName);
+			System.out.println("Restaurant name updated successfully");
 		} catch (IOException e) {
 			System.err.println("Restaurant data could not be saved properly");
 		}
-		System.out.println("Restaurant name updated successfully");
 	}
 	/**
 	 * 
@@ -480,10 +487,147 @@ public class Menu {
 		String newRestNit = sc.nextLine();
 		try {
 			control.updateRestaurantNit(restNit, newRestNit);
+			System.out.println("Restaurant Nit updated successfully");
 		} catch (IOException e) {
 			System.err.println("Data could not be saved properly");
 		}
-		System.out.println("Restaurant Nit updated successfully");
+	}
+
+	public void updateProduct() {
+		System.out.println("Type in the code of the product of which you wish to update data");
+		String code= sc.nextLine();
+		try {
+			otherCheckCode(code);
+			boolean contin = true;
+			while (contin) {
+				boolean contin2 = true;
+				do {
+					contin2 = true;
+					System.out.println("What do you wish to update?");
+					System.out.println("Type 1 if you wish to update the product's code");
+					System.out.println("Type 2 if you wish to update the products's cost");
+					System.out.println("Type 3 if you wish to update the product's description");
+					System.out.println("Type 4 if you wish to update the products's name");
+					System.out.println("Type 5 if you wish to update the products's NIT of the restaurant that offers it");
+					int dec = Integer.parseInt(sc.nextLine());
+					switch (dec) {
+					case 1:
+						updateProductCode(code);
+						break;
+					case 2:
+						updateProductCost(code);
+						break;
+					case 3:
+						updateProductDescription(code);
+						break;
+					case 4:
+						updateProductName(code);
+						break;
+					case 5:
+						updateProductRestNit(code);
+						break;
+					default:
+						System.out.println("Type in a valid option");
+						contin2 = false;
+						break;
+					}
+				} while (contin2);
+				do {
+					contin2 = true;
+					System.out.println("Do you wish to update more information about this restaurant?");
+					System.out.println("Type 1 if yes");
+					System.out.println("Type 2 if no");
+					int dec = Integer.parseInt(sc.nextLine());
+					switch (dec) {
+					case 1:
+						contin = true;
+						break;
+					case 2:
+						contin = false;
+						break;
+					default:
+						System.out.println("Type a valid option");
+						contin2 = false;
+						break;
+					}
+				} while (contin2);
+			}
+		} 
+		catch (ProductDoesNotExistException e)
+		{
+			System.err.println("A product with this code is not registered");
+		}
+	}
+	/**
+	 * 
+	 * @param code
+	 */
+	public void updateProductCode(String code) {
+		System.out.println("Type in the new code of the product");
+		String newCode = sc.nextLine();
+		try {
+			control.updateProductCode(code, newCode);
+			System.out.println("Product code updated successfully");
+		} catch (IOException e) {
+			System.err.println("Data could not be saved properly");
+		}
+	}
+
+	/**
+	 * 
+	 * @param code
+	 */
+	public void updateProductCost(String code) {
+		System.out.println("Type in the new cost of the product");
+		double newCost= Double.parseDouble(sc.nextLine());
+		try {
+			control.updateProductCost(code, newCost);
+			System.out.println("Product cost updated successfully");
+		} catch (IOException e) {
+			System.err.println("Product data could not be saved properly");
+		}
+	}
+	/**
+	 * 
+	 * @param code
+	 */
+	public void updateProductDescription(String code) {
+		System.out.println("Type in the new description of the product");
+		String newDesc= sc.nextLine();
+		try {
+			control.updateProductDescription(code, newDesc);
+			System.out.println("Product description updated successfully");
+		} catch (IOException e) {
+			System.err.println("Product data could not be saved properly");
+		}
+	}
+	/**
+	 * 
+	 * @param code
+	 */
+	public void updateProductName(String code) {
+		System.out.println("Type in the new name of the product");
+		String newName= sc.nextLine();
+		try {
+			control.updateProductName(code, newName);
+			System.out.println("Product name updated successfully");
+		} catch (IOException e) {
+			System.err.println("Product data could not be saved properly");
+		}
+	}
+
+	public void updateProductRestNit(String code)  {
+		System.out.println("Type in the new NIT of the restaurant offering this product");
+		String newRestNit= sc.nextLine();
+		try {
+			otherCheckNit(newRestNit);
+			control.updateProductRestNit(code, newRestNit);
+			System.out.println("NIT of restaurant offering the product updated successfully");
+		} catch (IOException e) {
+			System.err.println("Product data could not be saved properly");
+		} catch (RestaurantDoesNotExistException e) {
+			System.err.println("A restaurant with that NIT is not registered");
+		}
 	}
 
 	public void updateClient() {
@@ -559,10 +703,10 @@ public class Menu {
 		String newClientAddress= sc.nextLine();
 		try {
 			control.updateClientAdress(idn, newClientAddress);
+			System.out.println("Client address updated successfully");
 		} catch (IOException e) {
 			System.err.println("Client data could not be saved properly");
 		}
-		System.out.println("Client address updated successfully");
 	}
 
 	public void updateClientFirstName(String idn) {
@@ -570,10 +714,10 @@ public class Menu {
 		String newClientFirstName= sc.nextLine();
 		try {
 			control.updateClientFirstName(idn, newClientFirstName);
+			System.out.println("Client first name updated successfully");
 		} catch (IOException e) {
 			System.err.println("Client data could not be saved properly");
 		}
-		System.out.println("Client first name updated successfully");
 	}
 
 	public void updateClientSurName(String idn) {
@@ -581,10 +725,10 @@ public class Menu {
 		String newClientSurname= sc.nextLine();
 		try {
 			control.updateClientSurname(idn, newClientSurname);
+			System.out.println("Client first surname updated successfully");
 		} catch (IOException e) {
 			System.err.println("Client data could not be saved properly");
 		}
-		System.out.println("Client first surname updated successfully");
 	}
 
 	public void updateClientIdn(String idn) {
@@ -592,10 +736,10 @@ public class Menu {
 		String newClientIdNum= sc.nextLine();
 		try {
 			control.updateClientIdNum(idn, newClientIdNum);
+			System.out.println("Client ID number updated successfully");
 		} catch (IOException e) {
 			System.err.println("Data could not be saved properly");
 		}
-		System.out.println("Client ID number updated successfully");
 	}
 
 	public void updateClientIdt(String idn) {
@@ -616,10 +760,10 @@ public class Menu {
 	} while (!valid);
 		try {
 			control.updateClientIdType(idn, idt);
+			System.out.println("Client ID type updated successfully");
 		} catch (IOException e) {
 			System.err.println("Client data could not be saved properly");
 		}
-		System.out.println("Client ID type updated successfully");
 	}
 
 	public void updateClientPhone(String idn) {
@@ -627,10 +771,249 @@ public class Menu {
 		String newClientPhone= sc.nextLine();
 		try {
 			control.updateClientPhone(idn, newClientPhone);
+			System.out.println("Client ID number updated successfully");
 		} catch (IOException e) {
 			System.err.println("Data could not be saved properly");
 		}
-		System.out.println("Client ID number updated successfully");
 	}
 
+	public void updateOrder() {
+		System.out.println("Type in the code of the order of which you wish to update data");
+		String code= sc.nextLine();
+		try {
+			otherCheckOrdCode(code);
+			boolean contin = true;
+			while (contin) {
+				boolean contin2 = true;
+				do {
+					contin2 = true;
+					System.out.println("What do you wish to update?");
+					System.out.println("Type 1 if you wish to update the ID of the client who made the order");
+					System.out.println("Type 2 if you wish to update the order's products and quantities");
+					System.out.println("Type 3 if you wish to update the NIT of the restaurant to which this order was made (You'll also ave to update products and quantities)");
+					System.out.println("Type 4 if you wish to update the order's state");
+					int dec = Integer.parseInt(sc.nextLine());
+					switch (dec) {
+					case 1:
+						updateOrderClientID(code);
+						break;
+					case 2:
+						String restNit= getRestNitOfOrder(code);
+						updateOrderProductsAndQuantities(restNit, code);
+						break;
+					case 3:
+						updateOrderRestNit(code);
+						break;
+					case 4:
+						updateOrderState(code);
+						break;
+					default:
+						System.out.println("Type in a valid option");
+						contin2 = false;
+						break;
+					}
+				} while (contin2);
+				do {
+					contin2 = true;
+					System.out.println("Do you wish to update more information about this restaurant?");
+					System.out.println("Type 1 if yes");
+					System.out.println("Type 2 if no");
+					int dec = Integer.parseInt(sc.nextLine());
+					switch (dec) {
+					case 1:
+						contin = true;
+						break;
+					case 2:
+						contin = false;
+						break;
+					default:
+						System.out.println("Type a valid option");
+						contin2 = false;
+						break;
+					}
+				} while (contin2);
+			}
+		} 
+		catch (OrderDoesNotExistException e)
+		{
+			System.err.println("An order with this code is not registered");
+		} catch (ProductsAreNotOfTheSameRestaurantException e) {
+			System.err.println("One of the products of this order does not belong to the restaurant to which the order is being made");
+		} 
+	}
+	/**
+	 * 
+	 * @param code
+	 * @throws OrderDoesNotExistException
+	 */
+	public void otherCheckOrdCode(String code) throws OrderDoesNotExistException {
+		control.checkOrdCode(code);
+	}
+	/**
+	 * 
+	 * @param code
+	 */
+	public void updateOrderClientID(String code) {
+		System.out.println("Type in the new ID of the client that made this order");
+		String newOrderClientID= sc.nextLine();
+		try {
+			otherCheckId(newOrderClientID);
+			control.updateOrderClientID(code, newOrderClientID);
+			System.out.println("The ID Number of the client that made the order was updated successfully");
+		} catch (IOException e) {
+			System.err.println("Order data could not be saved properly");
+		}catch (ClientDoesNotExistException e) {
+			System.err.println("A client with that ID number is not registered");
+		}
+	}
+	/**
+	 * 
+	 * @param code
+	 * @return
+	 */
+	public String getRestNitOfOrder(String code) {
+		return control.getRestNitOfOrder(code);
+	}
+	/**
+	 * 
+	 * @param nitRes
+	 * @param code
+	 * @throws ProductsAreNotOfTheSameRestaurantException
+	 */
+	public void updateOrderProductsAndQuantities(String nitRes, String code) throws ProductsAreNotOfTheSameRestaurantException {
+		System.out.println("Rewriting products and quantities of the order");
+		List<String> codes = new ArrayList<String>();
+		List<Integer> quantities = new ArrayList<Integer>();
+		boolean contin=true;
+		while (contin) {
+			System.out.println("Type in the code of a product to order");
+			showProductsFromRestaurant(nitRes);
+			String codeOfProdToAdd = sc.nextLine();
+			try {
+				checkProdToAdd(nitRes, codeOfProdToAdd);
+			} catch (ProductDoesNotBelongToRestaurant e) {
+				System.err.println("This product does not belong to the restaurant to which the order is being made");
+			} catch (ProductDoesNotExistException e) {
+				System.err.println("A product with this code is not registered");
+			}
+			codes.add(codeOfProdToAdd);
+			boolean contin2 = false;
+			do {
+				System.out.println("Type in how many of this product is to be ordered (integer greater than 0)");
+				int quant = Integer.parseInt(sc.nextLine());
+				if (quant > 0) {
+					contin2 = true;
+					if (addIfSameProd(codeOfProdToAdd, codes, quantities, quant)) {
+					} else {
+						quantities.add(quant);
+					}
+				} else {
+					System.out.println("Please type in a valid amount (integer greater than 0)");
+				}
+			} while (contin2);
+			System.out.println("Is there another product in this order that is to be added?");
+			System.out.println("Type 1 if yes");
+			System.out.println("Type 2 if no");
+			int dec = Integer.parseInt(sc.nextLine());
+			switch (dec) {
+			case 1:
+				break;
+			case 2:
+				contin = false;
+				break;
+			default:
+				System.out.println("Type a valid option");
+				break;
+			}
+	}try {
+		control.updateOrderProductsAndQuantities(code, codes,quantities,nitRes);
+		System.out.println("The products and quantities of the order were updated successfully");
+	} catch (IOException e) {
+		System.err.println("Order data could not be saved properly");
+	}
+}
+	/**
+	 * 
+	 * @param code
+	 */
+	public void updateOrderRestNit(String code) {
+		System.out.println("Type in the new NIT of the restaurant to which this order is being made");
+		String newRestNit= sc.nextLine();
+		boolean success=true;
+		try {
+			otherCheckNit(newRestNit);
+			control.updateOrderRestNit(code, newRestNit);
+			System.out.println("NIT of restaurant to which this order was made was updated; updating products and quantities");
+
+		} catch (IOException e) {
+			System.err.println("Product data could not be saved properly");
+			success=false;
+		} catch (RestaurantDoesNotExistException e) {
+			System.err.println("A restaurant with that NIT is not registered");
+			success=false;
+		}
+		if (success) {
+			boolean repeat = false;
+			do {
+				try {
+					updateOrderProductsAndQuantities(newRestNit, code);
+				} catch (ProductsAreNotOfTheSameRestaurantException e) {
+					System.err.println("One of the products of this order does not belong to the restaurant to which the order is being made");
+					repeat=true;
+				}
+			} while (repeat);
+		}
+	}
+
+	/**
+	 * 
+	 * @param code
+	 */
+	public void updateOrderState(String code) {
+		String followingStates= control.getFollowingStatesText(code);
+		String[] states = followingStates.split("&");
+		String currentState=states[1];
+		int stateInt=0,dec=0;
+		boolean contin=true;
+		if(currentState.equals("SOLICITED"))
+		{
+			stateInt=1;
+		}
+		if(currentState.equals("IN_PROGRESS"))
+		{
+			stateInt=2;
+		}
+		if(currentState.equals("SENT"))
+		{
+			stateInt=3;
+		}
+		if(currentState.equals("DELIVERED"))
+		{
+			stateInt=4;
+		}
+		do {
+			contin=true;
+			System.out.println("To which state do you wish to update");
+			System.out.println(states[0]);
+			dec=Integer.parseInt(sc.nextLine());
+			if(dec>3|dec<1)
+			{
+				System.out.println("Type a valid option");contin=false;
+			}
+			else {
+				if(stateInt==2&dec>2)
+				{
+					System.out.println("Type a valid option");contin=false;
+				}
+				else {
+					if(stateInt==3&dec!=1)
+					{
+						System.out.println("Type a valid option");contin=false;
+					}
+				}
+			}
+		}while(!contin);
+		control.updateOrderState(code,dec,stateInt);
+		System.out.println("Order state updated successfully");
+	}
 }

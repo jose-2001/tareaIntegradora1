@@ -1,6 +1,7 @@
 package model;
 import java.util.List;
 
+import exceptions.OrderDoesNotExistException;
 import exceptions.ProductDoesNotBelongToRestaurant;
 import exceptions.ProductDoesNotExistException;
 import exceptions.RestaurantExistsException;
@@ -526,9 +527,98 @@ public class Controller {
 		saveProducts();
 		saveRestaurants();
 	}
-
-	public void updateClientAdress(String idn, String newClientAddress)throws IOException {
+	/**
+	 * 
+	 * @param code
+	 * @param newCode
+	 * @throws IOException
+	 */
+	public void updateProductCode(String code, String newCode) throws IOException {
 		for (int i = 0; i < orders.size(); i++) {
+			for (int j = 0; j < orders.size(); j++) {
+				if (orders.get(i).getProducts().get(j).getCode().equals(code)) {
+					orders.get(i).getProducts().get(j).setCode(newCode);
+				}
+			}
+		}
+		for (int i = 0; i < products.size(); i++) {
+			if(products.get(i).getCode().equals(code))
+			{
+				products.get(i).setCode(newCode);
+			}
+		}
+		saveOrders();
+		saveProducts();
+	}
+	/**
+	 * 
+	 * @param code
+	 * @param newCost
+	 * @throws IOException
+	 */
+	public void updateProductCost(String code, double newCost) throws IOException {
+		for (int i = 0; i < products.size(); i++) {
+			if(products.get(i).getCode().equals(code))
+			{
+				products.get(i).setCost(newCost);
+			}
+		}
+		saveProducts();
+	}
+	/**
+	 * 
+	 * @param code
+	 * @param newDesc
+	 * @throws IOException
+	 */
+	public void updateProductDescription(String code, String newDesc) throws IOException {
+		for (int i = 0; i < products.size(); i++) {
+			if(products.get(i).getCode().equals(code))
+			{
+				products.get(i).setDescription(newDesc);
+			}
+		}
+		saveProducts();
+	}
+	/**
+	 * 
+	 * @param code
+	 * @param newName
+	 * @throws IOException 
+	 */
+	public void updateProductName(String code, String newName) throws IOException {
+		for (int i = 0; i < products.size(); i++) {
+			if(products.get(i).getCode().equals(code))
+			{
+				products.get(i).setName(newName);
+			}
+		}
+		saveProducts();
+	}
+	/**
+	 * 
+	 * @param code
+	 * @param newRestNit
+	 * @throws IOException 
+	 */
+	public void updateProductRestNit(String code, String newRestNit) throws IOException {
+		for (int i = 0; i < products.size(); i++) {
+			if(products.get(i).getCode().equals(code))
+			{
+				products.get(i).setRestNit(newRestNit);
+			}
+		}
+		saveProducts();
+	}
+
+	/**
+	 * 
+	 * @param idn
+	 * @param newClientAddress
+	 * @throws IOException
+	 */
+	public void updateClientAdress(String idn, String newClientAddress)throws IOException {
+		for (int i = 0; i < clients.size(); i++) {
 			if(clients.get(i).getIdNum().equals(idn))
 			{
 				clients.get(i).setAddress(newClientAddress);
@@ -548,7 +638,7 @@ public class Controller {
 	}
 
 	public void updateClientSurname(String idn, String newClientSurname) throws IOException {
-		for (int i = 0; i < orders.size(); i++) {
+		for (int i = 0; i < clients.size(); i++) {
 			if(clients.get(i).getIdNum().equals(idn))
 			{
 				clients.get(i).setSurName(newClientSurname);
@@ -576,7 +666,7 @@ public class Controller {
 	}
 
 	public void updateClientIdType(String idn, int idt)  throws IOException {
-		for (int i = 0; i < orders.size(); i++) {
+		for (int i = 0; i < clients.size(); i++) {
 			if(clients.get(i).getIdNum().equals(idn))
 			{
 				clients.get(i).setIdType(idt);
@@ -586,12 +676,170 @@ public class Controller {
 	}
 
 	public void updateClientPhone(String idn, String newClientPhone) throws IOException {
-		for (int i = 0; i < orders.size(); i++) {
+		for (int i = 0; i < clients.size(); i++) {
 			if(clients.get(i).getIdNum().equals(idn))
 			{
 				clients.get(i).setPhone(newClientPhone);
 			}
 		}
 		saveClients();
+	}
+
+	public void checkOrdCode(String code) throws OrderDoesNotExistException {
+		boolean found=false;
+		for (int i = 0; i < orders.size(); i++) {
+			if(orders.get(i).getCode().equals(code))
+			{
+				found=true;
+			}
+		}
+		if(!found)
+		{
+			throw new OrderDoesNotExistException();
+		}
+	}
+
+	public void updateOrderClientID(String code, String newOrderClientID) throws IOException {
+		for (int i = 0; i < orders.size(); i++) {
+			if(orders.get(i).getCode().equals(code))
+			{
+				orders.get(i).setClientID(newOrderClientID);
+			}
+		}
+		saveOrders();
+	}
+	/**
+	 * 
+	 * @param code
+	 * @return
+	 */
+	public String getRestNitOfOrder(String code) {
+		String result="";
+		for (int i = 0; i < orders.size(); i++) {
+			if(orders.get(i).getCode().equals(code))
+			{
+				result= orders.get(i).getRestNit();
+			}
+		}
+		return result;
+	}
+	/**
+	 * 
+	 * @param code
+	 * @param codes
+	 * @param quantities
+	 * @param nitRes
+	 * @throws ProductsAreNotOfTheSameRestaurantException
+	 * @throws IOException
+	 */
+	public void updateOrderProductsAndQuantities(String code, List<String> codes, List<Integer> quantities, String nitRes) throws ProductsAreNotOfTheSameRestaurantException, IOException {
+		ArrayList<Product> prodsOfOrder = new ArrayList<Product>();
+		for(int i=0;i<codes.size(); i++)
+		{
+			for(int j=0;j<products.size();j++) {
+				if(codes.get(i).equals(products.get(j).getCode()))
+				{
+					prodsOfOrder.add(products.get(j));
+				}
+			}
+		}
+		checkProdsOfSameRes(nitRes, prodsOfOrder);
+		for (int i = 0; i < orders.size(); i++) {
+			if(orders.get(i).getCode().equals(code))
+			{
+				orders.get(i).setProducts(prodsOfOrder);
+				orders.get(i).setQuantities(quantities);
+			}
+		}
+		saveOrders();
+	}
+	/**
+	 * 
+	 * @param code
+	 * @param newRestNit
+	 * @throws IOException 
+	 */
+	public void updateOrderRestNit(String code, String newRestNit) throws IOException {
+		for (int i = 0; i < orders.size(); i++) {
+			if(orders.get(i).getCode().equals(code))
+			{
+				orders.get(i).setRestNit(newRestNit);
+			}
+		}
+		saveOrders();
+	}
+
+	public String getFollowingStatesText(String code) {
+		String result="";
+		Order.State currentState = null;
+		for (int i = 0; i < orders.size(); i++) {
+			if(orders.get(i).getCode().equals(code))
+			{
+				currentState=orders.get(i).getState();
+			}
+		}		
+		switch(currentState)
+		{
+		case DELIVERED:
+			result="There are no further states";
+			break;
+		case IN_PROGRESS:
+			result="Type 1 for Sent\n"+"Type 2 for Delivered\n";
+			break;
+		case SENT:
+			result="Type 1 for Delivered\n";
+			break;
+		case SOLICITED:
+			result="Type 1 for In Progress\n" + "Type 2 for Sent\n"+"Type 3 for Delivered\n";
+			break;
+		default:
+			break;
+		
+		}
+		result+="&"+currentState;
+		return result;
+	}
+
+	public void updateOrderState(String code, int dec, int stateInt) {
+		Order.State newState=null;
+		switch(stateInt)
+		{
+		case 1:
+			switch(dec)
+			{
+			case 1:
+				newState=Order.State.IN_PROGRESS;
+				break;
+			case 2:
+				newState=Order.State.SENT;
+				break;
+			case 3: 
+				newState=Order.State.DELIVERED;
+				break;
+			}
+			break;
+		case 2:
+			switch(dec)
+			{
+			case 1: 
+				newState=Order.State.SENT;
+				break;
+			case 2: 
+				newState=Order.State.DELIVERED;
+				break;
+			}
+			break;
+		case 3:
+			newState=Order.State.DELIVERED;
+			break;
+		case 4:
+			break;
+		}
+		for (int i = 0; i < orders.size(); i++) {
+			if(orders.get(i).getCode().equals(code))
+			{
+				orders.get(i).setState(newState);
+			}
+		}
 	}
 }
