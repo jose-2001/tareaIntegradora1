@@ -46,10 +46,7 @@ public class Controller {
 
 	/** 
 	 * creates an instance of the class Controller, if possible,  loads data available
-	 * @param restaurants an ArrayList of Restaurant
-	 * @param clients an ArrayList of Client
-	 * @param products an ArrayList of Product
-	 * @param orders an ArrayList of Order
+	 * 
 	 */
 	public Controller() {
 
@@ -994,24 +991,24 @@ public class Controller {
 	}
 	/**
 	 * generates a String that says whether or not a client was found and how long it took
-	 * @param idn a String containing the ID number of the client to be sought
+	 * @param cfn a String containing the first name of the client to be sought
 	 * @return a String that says whether or not a client was found and how long it took
 	 */
-	public String seekClient(String idn) {
+	public String seekClient(String cfn) {
 		String msg="";
-		ArrayList<Client> clientsOrderedByIdNum = (ArrayList<Client>) clients;
-		IdNumComparator ic = new IdNumComparator();
-		Collections.sort(clientsOrderedByIdNum,ic);
+		ArrayList<Client> clientsOrderedByFirstName = (ArrayList<Client>) clients;
+		FirstNameComparator fnc = new FirstNameComparator();
+		Collections.sort(clientsOrderedByFirstName,fnc);
 		long start=System.currentTimeMillis();
 		
 		boolean found = false;
 		int strt = 0;
-		int fnsh = clientsOrderedByIdNum.size() - 1;
+		int fnsh = clientsOrderedByFirstName.size() - 1;
 		while (strt <= fnsh && !found) {
 			int mid = (strt + fnsh) / 2;
-			if (clientsOrderedByIdNum.get(mid).getIdNum().equals(idn)) {
+			if (clientsOrderedByFirstName.get(mid).getFirstName().equals(cfn)) {
 				found = true;
-			} else if (clientsOrderedByIdNum.get(mid).getIdNum().compareTo(idn) > 0) {
+			} else if (clientsOrderedByFirstName.get(mid).getFirstName().compareTo(cfn) > 0) {
 				fnsh = mid - 1;
 			} else {
 				strt = mid + 1;

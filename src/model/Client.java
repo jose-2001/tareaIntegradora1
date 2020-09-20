@@ -20,6 +20,7 @@ public class Client {
 	 * creates an instance of the class Client
 	 * @param idn a String, not empty nor null
 	 * @param fn a String, not empty nor null
+	 * @param sn a String, not empty nor null
 	 * @param p a String, not empty nor null
 	 * @param a a String, not empty nor null
 	 * @param idt an int, 1,2,3 or 4
@@ -65,7 +66,7 @@ public class Client {
 		return firstName;
 	}
 	/**
-	 * @param fullName the fullName to set
+	 * @param firstName the firstName to set
 	 */
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
@@ -116,7 +117,7 @@ public class Client {
 		else{return 4;}}}
 	}
 	/**
-	 * @param idType the idType to set
+	 * @param idt the idType to set
 	 */
 	public void setIdType(int idt) {
 		switch(idt){

@@ -1114,9 +1114,9 @@ public class Menu {
 	 * shows how long it took to find (or not) a client given their ID number
 	 */
 	public void seekClient() {
-		System.out.println("Type in the ID number of the client you seek");
-		String idn= sc.nextLine();
-		System.out.println(control.seekClient(idn));
+		System.out.println("Type in the first name of the client you seek");
+		String cfn= sc.nextLine();
+		System.out.println(control.seekClient(cfn));
 	}
 	/**
 	 * imports , if possible, restaurant information from a .csv file after asking its direction and name
