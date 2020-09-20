@@ -1174,6 +1174,10 @@ public class Menu {
 			control.importProducts(fn);
 			System.out.println("Data imported successfully");
 		}
+		catch (RestaurantDoesNotExistException e) {
+			System.err.println("A restaurant with this NIT is not registered");
+			e.printStackTrace();
+		}
 		catch(FileNotFoundException e)
 		{
 			System.err.println("The file from which the product info was to be imported or the file where the client info was to be saved was not found");

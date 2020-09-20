@@ -1069,12 +1069,14 @@ public class Controller {
 	 * @param fn a String, the name of the file to import
 	 * @throws FileNotFoundException if the file to import cannot be found
 	 * @throws IOException  if it cannot write the file properly while saving after importing the products
+	 * @throws RestaurantDoesNotExistException 
 	 */
-	public void importProducts(String fn)throws FileNotFoundException, IOException {
+	public void importProducts(String fn)throws FileNotFoundException, IOException, RestaurantDoesNotExistException {
 		BufferedReader br = new BufferedReader(new FileReader(fn));
 		String line=br.readLine();
 		do{
 			String[] parts = line.split("|");
+			otherCheckNit(parts[4]);
 		    registerProduct(parts[0],parts[1],parts[2],Double.parseDouble(parts[3]),parts[4]);
 		    line = br.readLine();   
 		}
@@ -1125,7 +1127,7 @@ public class Controller {
 					throw new OrderAlreadyExistsException();
 				}
 				
-				if(!currentOrderCode.equals(lastOrderCode))
+				if(!(currentOrderCode.equals(lastOrderCode))&&!(lastOrderCode.equals("")))
 				{
 					try {
 						registerOrder(lastOrderCode,lastOrderIdn,lastOrderNitRes,codes,quantities,lastOrderDate);
