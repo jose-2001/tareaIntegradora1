@@ -7,14 +7,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import exceptions.ClientDoesNotExistException;
-import exceptions.ClientExistsException;
+import exceptions.ClientAlreadyExistsException;
+import exceptions.OrderAlreadyExistsException;
 import exceptions.OrderDoesNotExistException;
+import exceptions.ProductAlreadyExistsException;
 import exceptions.ProductDoesNotBelongToRestaurant;
 import exceptions.ProductDoesNotExistException;
-import exceptions.ProductExistsException;
 import exceptions.ProductsAreNotOfTheSameRestaurantException;
 import exceptions.RestaurantDoesNotExistException;
-import exceptions.RestaurantExistsException;
+import exceptions.RestaurantAlreadyExistsException;
 import model.Controller;
 
 public class Menu {
@@ -29,11 +30,16 @@ public class Menu {
 
 	// methods
 
+	/**
+	 * creates an instance of the class Menu
+	 */
 	public Menu() {
 		sc = new Scanner(System.in);
 		control = new Controller();
 	}
-
+	/**
+	 * starts the menu
+	 */
 	public void startMenu() {
 		String msg = getMenuText();
 		int dec;
@@ -43,7 +49,10 @@ public class Menu {
 			decisionSwitch(dec);
 		} while (dec != EXIT_OPTION);
 	}
-
+	/**
+	 * generates the menu text
+	 * @return menu text as a String
+	 */
 	public String getMenuText() {
 		String menu = "";
 		menu += "==============\n" + "     MENU\n" + "==============\n";
@@ -67,7 +76,10 @@ public class Menu {
 				+ "17. Exit\n\n";
 		return menu;
 	}
-
+	/**
+	 * calls the methods involving the menu options
+	 * @param dec an int representing which menu option to open
+	 */
 	public void decisionSwitch(int dec) {
 		switch (dec) {
 		case 1:
@@ -92,41 +104,43 @@ public class Menu {
 			updateClient();
 			break;
 		case 8:
-			 updateOrder();
+			updateOrder();
 			break;
 		case 9:
-			// reportOrders();
+			reportOrders();
 			break;
 		case 10:
-			// showRestaurants();
+			showRestaurants();
 			break;
 		case 11:
-			// showClients();
+			showClients();
 			break;
 		case 12:
-			// seekClient();
+			seekClient();
 			break;
 		case 13:
-			// importRestaurants();
+			importRestaurants();
 			break;
 		case 14:
-			// importClients();
+			importClients();
 			break;
 		case 15:
-			// importProducts();
+			importProducts();
 			break;
 		case 16:
-			// importOrders();
+			importOrders();
 			break;
 		case 17:
-			// exit();
+			System.out.println("GoodBye!");
 			break;
 		default:
 			System.out.println("Please enter a valid option");
 			break;
 		}
 	}
-
+	/**
+	 * registers a new restaurant after asking for data and checking if it can be added
+	 */
 	public void registerRestaurant() {
 		System.out.println("Type in the new restaurant's name");
 		String name = sc.nextLine();
@@ -140,7 +154,7 @@ public class Menu {
 			System.out.println("Restaurant registered successfully");
 		} catch (FileNotFoundException e) {
 			System.err.println("The file where the Restaurant data is to be saved could not be found");
-		} catch (RestaurantExistsException e) {
+		} catch (RestaurantAlreadyExistsException e) {
 			System.err.println("There is a restaurant already registered with that NIT");
 		} catch (IOException e) {
 			System.err.println("Restaurant data could not be saved properly");
@@ -151,16 +165,15 @@ public class Menu {
 	 * this method checks if a restaurant exists with the NIT provided, in order to
 	 * add a new restaurant with that NIT
 	 * 
-	 * @param nit the NIT to be checked
-	 * @throws RestaurantExistsException if there is a restaurant registered with
-	 *                                   that NIT
+	 * @param nit a String, not null, the NIT to be checked
+	 * @throws RestaurantAlreadyExistsException if there is a restaurant registered with that NIT
 	 */
-	public void resCheckNit(String nit) throws RestaurantExistsException {
-		if (control.checkNit(nit)) {
-			throw new RestaurantExistsException();
-		}
+	public void resCheckNit(String nit) throws RestaurantAlreadyExistsException {
+		control.resCheckNit(nit);
 	}
-
+	/**
+	 * registers a new product after asking for data and checking if it can be added
+	 */
 	public void registerProduct() {
 		System.out.println("Type in the NIT of the restaurant offering this product");
 		String rn = sc.nextLine();
@@ -168,7 +181,7 @@ public class Menu {
 			otherCheckNit(rn);
 			System.out.println("Type in the new product's code");
 			String cd = sc.nextLine();
-			prodCheckCode(cd);
+			prodCheckProdCode(cd);
 			System.out.println("Type in the new product's name");
 			String n = sc.nextLine();
 			System.out.println("Type in the new product's description");
@@ -179,7 +192,7 @@ public class Menu {
 			System.out.println("Product registered successfully");
 		} catch (RestaurantDoesNotExistException e) {
 			System.err.println("A restaurant with that NIT is not registered");
-		} catch (ProductExistsException e) {
+		} catch (ProductAlreadyExistsException e) {
 			System.err.println("There is a propduct already registered with that code");
 		} catch (FileNotFoundException e) {
 			System.err.println("The file where the product data is to be saved could not be found");
@@ -190,40 +203,36 @@ public class Menu {
 	}
 
 	/**
-	 * checks if a restaurant exists with the NIT provided, in order to register a
-	 * product to that restaurant
-	 * 
-	 * @param nit the NIT to be checked
-	 * @throws RestaurantExistsException if there is a restaurant registered with
-	 *                                   that NIT
+	 * checks if a restaurant exists with the NIT provided, in order to use that restaurant somewhere else 
+	 * @param nit a String, not null, the NIT to be checked
+	 * @throws RestaurantDoesNotExistException  if there is not a restaurant registered with that NIT
 	 */
 	public void otherCheckNit(String nit) throws RestaurantDoesNotExistException {
-		if (!control.checkNit(nit)) {
-			throw new RestaurantDoesNotExistException();
-		}
+		control.otherCheckNit(nit);
 	}
 
 	/**
 	 * checks if a product exists with the code provided, in order to register a new
-	 * product with that code
-	 * 
-	 * @param c the code to be checked
-	 * @throws ProductExistsException if there is a product registered with that
-	 *                                code
+	 * product with that code 
+	 * @param c a String, not null, the code to be checked
+	 * @throws ProductAlreadyExistsException if there is a product registered with that code
 	 */
-	public void prodCheckCode(String c) throws ProductExistsException {
-		if (control.checkProdCode(c)) {
-			throw new ProductExistsException();
-		}
+	public void prodCheckProdCode(String c) throws ProductAlreadyExistsException {
+		control.prodCheckProdCode(c);
 	}
-	
-	public void otherCheckCode(String c) throws ProductDoesNotExistException {
-		if (!control.checkProdCode(c)) {
-			throw new ProductDoesNotExistException();
-		}
+	/**
+	 * checks if a product exists with the code provided, in order to use that product somewhere else
+	 * @param c a String, not null, the code to be checked
+	 * @throws ProductDoesNotExistException if there is not a product registered with that code
+	 */
+	public void otherCheckProdCode(String c) throws ProductDoesNotExistException {
+		control.otherCheckProdCode(c);
+
 	}
 
-
+	/**
+	 * registers a new client after asking for data and checking if it can be added
+	 */
 	public void registerClient() {
 		int idt;
 		boolean valid = false;
@@ -255,20 +264,25 @@ public class Menu {
 			System.out.println("Client registered successfully");
 		} catch (FileNotFoundException e) {
 			System.err.println("The file where the Client data is to be saved could not be found");
-		} catch (ClientExistsException e) {
+		} catch (ClientAlreadyExistsException e) {
 			System.err.println("There is a client already registered with that ID number");
 		} catch (IOException e) {
 			System.err.println("Client data could not be saved properly");
 		}
 	}
-
-	public void clientCheckId(String idn) throws ClientExistsException {
-		boolean found = control.checkId(idn);
-		if (found) {
-			throw new ClientExistsException();
-		}
+	/**
+	 * checks if a client exists with the ID number provided, in order to register a new
+	 * client with that ID number  
+	 * @param idn a String, not null, the ID number to be checked
+	 * @throws ClientAlreadyExistsException if there is a client registered with that ID number 
+	 */
+	public void clientCheckId(String idn) throws ClientAlreadyExistsException {
+		control.clientCheckId(idn);
+		
 	}
-
+	/**
+	 * registers a new order after asking for data and checking if it can be added
+	 */
 	public void registerOrder() {
 		System.out.println("Type in the ID number of the client making the new order");
 		String idn = sc.nextLine();
@@ -286,7 +300,7 @@ public class Menu {
 				showProductsFromRestaurant(nitRes);
 				String codeOfProdToAdd = sc.nextLine();
 				checkProdToAdd(nitRes, codeOfProdToAdd);
-				codes.add(codeOfProdToAdd);
+				
 				boolean contin2 = false;
 				do {
 					System.out.println("Type in how many of this product is to be ordered (integer greater than 0)");
@@ -295,7 +309,7 @@ public class Menu {
 						contin2 = true;
 						if (addIfSameProd(codeOfProdToAdd, codes, quantities, quant)) {
 						} else {
-							quantities.add(quant);
+							codes.add(codeOfProdToAdd);quantities.add(quant);
 						}
 					} else {
 						System.out.println("Please type in a valid amount (integer greater than 0)");
@@ -336,24 +350,42 @@ public class Menu {
 			System.err.println("Order data could not be saved properly");
 		}
 	}
-
+	/**
+	 * checks if a client exists with the ID number provided, in order to use that client somewhere else
+	 * @param idn a String, not null, the ID number to be checked
+	 * @throws ClientDoesNotExistException if there is not a client registered with that ID number
+	 */
 	public void otherCheckId(String idn) throws ClientDoesNotExistException {
-		boolean found = control.checkId(idn);
-		if (!found) {
-			throw new ClientDoesNotExistException();
-		}
+		control.otherCheckId(idn);
+		
 	}
-
+	/**
+	 * shows a list of products from the restaurant with the NIT given
+	 * @param nitRes a String, not null, the NIT of the restaurant that will display its products; a restaurant with this NIT must be registered
+	 */
 	public void showProductsFromRestaurant(String nitRes) {
 		System.out.println(control.showProductsFromRestaurant(nitRes));
 
 	}
-
+	/**
+	 * checks if the Product to be added belongs to the restaurant the order is being made to
+	 * @param restNit a String, not null, the NIT of the restaurant the order is being made to
+	 * @param codeOfProd a String, not null, the code of the product to be checked 
+	 * @throws ProductDoesNotBelongToRestaurant if the product does not belong to the same restaurant the order is being made to
+	 * @throws ProductDoesNotExistException if there is not a product registered with that code
+	 */
 	public void checkProdToAdd(String restNit, String codeOfProd)
 			throws ProductDoesNotBelongToRestaurant, ProductDoesNotExistException {
 		control.checkProdToAdd(restNit, codeOfProd);
 	}
-
+	/**
+	 * checks if the code of the product to add is already in the products of the order, if so, adds to its first appearance's quantities, instead of registering the same product twice
+	 * @param codeToCheck a String, not null, the code of the product to check 
+	 * @param codes an ArrayList of String, not null, the codes of the products already in the order
+	 * @param quantities an ArrayList of ints, not null, the quantities of the products already in the order
+	 * @param quant an int, positive
+	 * @return true if the product was already in the order, false if it was not.
+	 */
 	public boolean addIfSameProd(String codeToCheck, List<String> codes, List<Integer> quantities, int quant) {
 		boolean result = false;
 		for (int i = 0; i < codes.size(); i++) {
@@ -367,9 +399,9 @@ public class Menu {
 	}
 
 	/**
-	 * Taken from geeksforgeeks, generates an alphanumeric random String
-	 * @param n
-	 * @return
+	 * Adapted from geeksforgeeks, generates an alphanumeric random String used as Order code
+	 * @param n the number of characters of the code generated
+	 * @return a random alphanumeric string of 10 characters that has not been used as an order code before
 	 */
 	public String getAlphaNumericString(int n) 
 		{  
@@ -388,13 +420,19 @@ public class Menu {
 			}
 			return result; 
 		} 
-
+	/**
+	 * checks if the order code provided has been used as an order code in the orders registered
+	 * @param code a String, not null the code to be checked
+	 * @return true if it has been used, false if it has not
+	 */
 	public boolean codeIsRepeated(String code) {
 		boolean result= false;
 		result=control.checkIfCodeIsRepeated(code);
 		return result;
 	}
-
+	/**
+	 * updates, if possible, the information of a restaurant, asks which restaurant, what information and its new values
+	 */
 	public void updateRestaurant() {
 		System.out.println("Type in the NIT of the restaurant of which you wish to update data");
 		String restNit = sc.nextLine();
@@ -451,8 +489,8 @@ public class Menu {
 		}
 	}
 	/**
-	 * 
-	 * @param restNit
+	 * updates a restaurant's administrator name
+	 * @param restNit a String, not null the NIT of the restaurant to update
 	 */
 	public void updateRestaurantAdminName(String restNit) {
 		System.out.println("Type in the name of the new Administrator");
@@ -465,8 +503,8 @@ public class Menu {
 		}
 	}
 	/**
-	 * 
-	 * @param restNit
+	 * updates a restaurant's name
+	 * @param restNit a String, not null the NIT of the restaurant to update
 	 */
 	public void updateRestaurantName(String restNit) {
 		System.out.println("Type in the new name of the restaurant");
@@ -479,8 +517,8 @@ public class Menu {
 		}
 	}
 	/**
-	 * 
-	 * @param restNit
+	 * updates a restaurant's NIT
+	 * @param restNit a String, not null the NIT of the restaurant to update
 	 */
 	public void updateRestaurantNit(String restNit) {
 		System.out.println("Type in the new NIT of the restaurant");
@@ -492,12 +530,14 @@ public class Menu {
 			System.err.println("Data could not be saved properly");
 		}
 	}
-
+	/**
+	 * updates, if possible, the information of a product, asks which product, what information and its new values
+	 */
 	public void updateProduct() {
 		System.out.println("Type in the code of the product of which you wish to update data");
 		String code= sc.nextLine();
 		try {
-			otherCheckCode(code);
+			otherCheckProdCode(code);
 			boolean contin = true;
 			while (contin) {
 				boolean contin2 = true;
@@ -559,8 +599,8 @@ public class Menu {
 		}
 	}
 	/**
-	 * 
-	 * @param code
+	 * updates a product's code 
+	 * @param code a String, not null, the code of the product to update
 	 */
 	public void updateProductCode(String code) {
 		System.out.println("Type in the new code of the product");
@@ -574,8 +614,8 @@ public class Menu {
 	}
 
 	/**
-	 * 
-	 * @param code
+	 * updates a product's cost
+	 * @param code a String, not null the code of the product to update
 	 */
 	public void updateProductCost(String code) {
 		System.out.println("Type in the new cost of the product");
@@ -588,8 +628,8 @@ public class Menu {
 		}
 	}
 	/**
-	 * 
-	 * @param code
+	 * updates a product's description
+	 * @param code a String, not null the code of the product to update
 	 */
 	public void updateProductDescription(String code) {
 		System.out.println("Type in the new description of the product");
@@ -602,8 +642,8 @@ public class Menu {
 		}
 	}
 	/**
-	 * 
-	 * @param code
+	 * updates a product's name
+	 * @param code a String, not null the code of the product to update
 	 */
 	public void updateProductName(String code) {
 		System.out.println("Type in the new name of the product");
@@ -615,7 +655,10 @@ public class Menu {
 			System.err.println("Product data could not be saved properly");
 		}
 	}
-
+	/**
+	 * updates a product's NIT of the restaurant offering it 
+	 * @param code a String, not null the code of the product to update
+	 */
 	public void updateProductRestNit(String code)  {
 		System.out.println("Type in the new NIT of the restaurant offering this product");
 		String newRestNit= sc.nextLine();
@@ -629,7 +672,9 @@ public class Menu {
 			System.err.println("A restaurant with that NIT is not registered");
 		}
 	}
-
+	/**
+	 * updates, if possible, the information of a client, asks which client, what information and its new values
+	 */
 	public void updateClient() {
 		System.out.println("Type in the ID number of the client whose information you wish to update");
 		String idn = sc.nextLine();
@@ -697,7 +742,10 @@ public class Menu {
 			System.err.println("A client with that identification number is not registered");
 		}
 	}
-
+	/**
+	 * updates a client's address 
+	 * @param idn a String, not null the ID number of the client to update
+	 */
 	public void updateClientAddress(String idn) {
 		System.out.println("Type in the new address of the client");
 		String newClientAddress= sc.nextLine();
@@ -708,7 +756,10 @@ public class Menu {
 			System.err.println("Client data could not be saved properly");
 		}
 	}
-
+	/**
+	 * updates a client's first name
+	 * @param idn a String, not null the ID number of the client to update
+	 */
 	public void updateClientFirstName(String idn) {
 		System.out.println("Type in the new first name of the client");
 		String newClientFirstName= sc.nextLine();
@@ -719,7 +770,10 @@ public class Menu {
 			System.err.println("Client data could not be saved properly");
 		}
 	}
-
+	/**
+	 * updates a client's surname
+	 * @param idn a String, not null the ID number of the client to update
+	 */
 	public void updateClientSurName(String idn) {
 		System.out.println("Type in the new first surname of the client");
 		String newClientSurname= sc.nextLine();
@@ -730,7 +784,10 @@ public class Menu {
 			System.err.println("Client data could not be saved properly");
 		}
 	}
-
+	/**
+	 * updates a client's ID number
+	 * @param idn a String, not null the ID number of the client to update
+	 */
 	public void updateClientIdn(String idn) {
 		System.out.println("Type in the new ID number of the client");
 		String newClientIdNum= sc.nextLine();
@@ -741,7 +798,10 @@ public class Menu {
 			System.err.println("Data could not be saved properly");
 		}
 	}
-
+	/**
+	 * updates a client's ID Type
+	 * @param idn a String, not null the ID number of the client to update
+	 */
 	public void updateClientIdt(String idn) {
 		int idt;
 		boolean valid=false;
@@ -765,7 +825,10 @@ public class Menu {
 			System.err.println("Client data could not be saved properly");
 		}
 	}
-
+	/**
+	 * updates a client's phone
+	 * @param idn a String, not null the ID number of the client to update
+	 */
 	public void updateClientPhone(String idn) {
 		System.out.println("Type in the new phone number of the client");
 		String newClientPhone= sc.nextLine();
@@ -776,7 +839,9 @@ public class Menu {
 			System.err.println("Data could not be saved properly");
 		}
 	}
-
+	/**
+	 * updates, if possible, the information of a order, asks which order, what information and its new values
+	 */
 	public void updateOrder() {
 		System.out.println("Type in the code of the order of which you wish to update data");
 		String code= sc.nextLine();
@@ -842,16 +907,17 @@ public class Menu {
 		} 
 	}
 	/**
-	 * 
-	 * @param code
-	 * @throws OrderDoesNotExistException
+	 * checks if an order exists with the code provided, in order to use that Order somewhere else
+	 * @param code a String, not null, the code of the order to check
+	 * @throws OrderDoesNotExistException if there is not an order with that code registered
 	 */
 	public void otherCheckOrdCode(String code) throws OrderDoesNotExistException {
-		control.checkOrdCode(code);
+		control.otherCheckOrdCode(code);
+			
 	}
 	/**
-	 * 
-	 * @param code
+	 * updates an order's client's ID number
+	 * @param code a String, not null, the code of the order to update
 	 */
 	public void updateOrderClientID(String code) {
 		System.out.println("Type in the new ID of the client that made this order");
@@ -867,18 +933,18 @@ public class Menu {
 		}
 	}
 	/**
-	 * 
-	 * @param code
-	 * @return
+	 * returns the NIT if the restaurant to which the order with the code provided was made
+	 * @param code a String, not null, the code of the order to be checked, the order and its restaurant must have been registered already
+	 * @return a String, the NIT of the restaurant to which the order was made
 	 */
 	public String getRestNitOfOrder(String code) {
 		return control.getRestNitOfOrder(code);
 	}
 	/**
-	 * 
-	 * @param nitRes
-	 * @param code
-	 * @throws ProductsAreNotOfTheSameRestaurantException
+	 * updates an order's products and quantities
+	 * @param nitRes a String, not null, the NIT of the restaurant to which the order was made
+	 * @param code a String, not null, the code of the order to update
+	 * @throws ProductsAreNotOfTheSameRestaurantException if the new products are not of the same Restaurant
 	 */
 	public void updateOrderProductsAndQuantities(String nitRes, String code) throws ProductsAreNotOfTheSameRestaurantException {
 		System.out.println("Rewriting products and quantities of the order");
@@ -933,8 +999,8 @@ public class Menu {
 	}
 }
 	/**
-	 * 
-	 * @param code
+	 * updates an order's NIT of the restaurant that orders it, if successful, updates the products and quantities of the order
+	 * @param code a String, not null, the code of the order to update
 	 */
 	public void updateOrderRestNit(String code) {
 		System.out.println("Type in the new NIT of the restaurant to which this order is being made");
@@ -966,8 +1032,8 @@ public class Menu {
 	}
 
 	/**
-	 * 
-	 * @param code
+	 * updates an order's state
+	 * @param code a String, not null, the code of the order to update
 	 */
 	public void updateOrderState(String code) {
 		String followingStates= control.getFollowingStatesText(code);
@@ -1013,7 +1079,145 @@ public class Menu {
 				}
 			}
 		}while(!contin);
-		control.updateOrderState(code,dec,stateInt);
+		try {
+			control.updateOrderState(code,dec,stateInt);
+		} catch (IOException e) {
+			System.err.println("Product data could not be saved properly");
+		}
 		System.out.println("Order state updated successfully");
 	}
+	/**
+	 * asks for the separator to use to separate information and exports a .csv file with the information of the orders.
+	 */
+	public void reportOrders() {
+		System.out.println("Please specify the separator to be used");
+		char separator = sc.nextLine().charAt(0);
+		try {
+			control.generateOrdersReport(separator);
+		} catch (FileNotFoundException e) {
+			System.err.println("order report could not be exported properly");
+		}
+	}
+	/**
+	 * shows the restaurants' information
+	 */
+	public void showRestaurants() {
+		System.out.println(control.showRestaurants());
+	}
+	/**
+	 * shows the clients' information
+	 */
+	public void showClients() {
+		System.out.println(control.showClients());
+	}
+	/**
+	 * shows how long it took to find (or not) a client given their ID number
+	 */
+	public void seekClient() {
+		System.out.println("Type in the ID number of the client you seek");
+		String idn= sc.nextLine();
+		System.out.println(control.seekClient(idn));
+	}
+	/**
+	 * imports , if possible, restaurant information from a .csv file after asking its direction and name
+	 */
+	public void importRestaurants() {
+		System.out.println("The file from which you wish to import must have the following format:");
+		System.out.println("<RestaurantName>|<RestaurantNit>|<AdminName>");
+		System.out.println("Please type the name of the file you wish to import Restaurants from");
+		String fn=sc.nextLine();
+		try {
+			control.importRestaurants(fn);
+			System.out.println("Data imported successfully");
+		}
+		catch(FileNotFoundException e)
+		{
+			System.err.println("The file from which the restaurant info was to be imported or the file where the restaurant info was to be saved was not found");
+			System.err.println(e.getStackTrace());
+		}
+		catch (IOException e) {
+			System.err.println("Restaurant data could not be imported or saved properly");
+			System.err.println(e.getStackTrace());
+		}
+	}
+	/**
+	 * imports , if possible, client information from a .csv file after asking its direction and name
+	 */
+	public void importClients() {
+		System.out.println("The file from which you wish to import must have the following format:");
+		System.out.println("<ClientIDNumber>|<ClientFirst>|<ClientSurname>|<ClientPhone>|<ClientAddress>|<ClientIDType(number 1-4)>");
+		System.out.println("Please type the name of the file you wish to import Clients from");
+		String fn=sc.nextLine();
+		try {
+			control.importClients(fn);
+			System.out.println("Data imported successfully");
+		}
+		catch(FileNotFoundException e)
+		{
+			System.err.println("The file from which the client info was to be imported or the file where the client info was to be saved was not found");
+			System.err.println(e.getStackTrace());
+		}
+		catch (IOException e) {
+			System.err.println(e.getStackTrace());
+			System.err.println("Client data could not be imported or saved properly");
+		}
+	}
+	/**
+	 * imports , if possible, products information from a .csv file after asking its direction and name
+	 */
+	public void importProducts() {
+		System.out.println("The file from which you wish to import must have the following format:");
+		System.out.println("<ProductName>|<ProductCode>|<ProductDescription>|<ProductCost>|<ProductRestNit>");
+		System.out.println("Please type the name of the file you wish to import products from");
+		String fn=sc.nextLine();
+		try {
+			control.importProducts(fn);
+			System.out.println("Data imported successfully");
+		}
+		catch(FileNotFoundException e)
+		{
+			System.err.println("The file from which the product info was to be imported or the file where the client info was to be saved was not found");
+			System.err.println(e.getStackTrace());
+		}
+		catch (IOException e) {
+			System.err.println(e.getStackTrace());
+			System.err.println("Product data could not be imported or saved properly");
+		}
+	}
+	/**
+	 * imports , if possible, order information from a .csv file after asking its direction and name
+	 */
+	public void importOrders() {
+		System.out.println("The file from which you wish to import must have the following format:");
+		System.out.println("<OrderCode>|<OrderState>|<RestaurantNit>|<RestaurantAdminName>|<RestaurantName>|<ClientIDNumber>|<ClientIDType>|<ClientAddress>|<ClientFirstName>|<Client Surname>|<ClientPhone>|<DateOfOrder>|<ProductCode>|<ProductQuantity>|<ProductCost>|<ProductName>|<ProductDescription>");
+		System.out.println("Please type the name of the file you wish to import orders from");
+		String fn=sc.nextLine();
+		try {
+			control.importOrders(fn);
+			System.out.println("Data imported successfully");
+		}
+		catch(FileNotFoundException e)
+		{
+			System.err.println("The file from which the order info was to be imported or the file where the order info was to be saved was not found");
+			System.err.println(e.getStackTrace());
+		}
+		catch (IOException e) {
+			System.err.println(e.getStackTrace());
+			System.err.println("Order data could not be imported or saved properly");
+		} catch (ProductDoesNotExistException e) {
+			System.err.println("A product with this code is not registered");
+			e.printStackTrace();
+		} catch (ClientDoesNotExistException e) {
+			System.err.println("A client with this ID number is not registered");
+			e.printStackTrace();
+		} catch (RestaurantDoesNotExistException e) {
+			System.err.println("A restaurant with this NIT is not registered");
+			e.printStackTrace();
+		} catch (OrderAlreadyExistsException e) {
+			System.err.println("An order with this code is already registered");
+			e.printStackTrace();
+		}
+	}
+
+	
 }

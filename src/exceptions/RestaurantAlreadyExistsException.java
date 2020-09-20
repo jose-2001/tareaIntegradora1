@@ -5,6 +5,6 @@ package exceptions;
  *
  */
 @SuppressWarnings("serial")
-public class RestaurantExistsException extends Exception {
+public class RestaurantAlreadyExistsException extends Exception {
 
 }

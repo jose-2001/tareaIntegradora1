@@ -1,10 +1,9 @@
 package model;
-
 import java.util.Date;
 import java.util.List;
 
-//public class Order implements Comparable<Order>{
-public class Order {
+public class Order implements Comparable<Order>{
+
 	
 	enum State
 	{
@@ -19,12 +18,13 @@ public class Order {
 	private List<Integer> quantities;
 	private State state;
 	/**
-	 * @param code
-	 * @param dateAndTime
-	 * @param clientID
-	 * @param restNit
-	 * @param products
-	 * @param quantities
+	 * creates an instance of the class Order
+	 * @param code a String, not empty nor null
+	 * @param dateAndTime a Date, not null
+	 * @param clientID a String, not empty nor null
+	 * @param restNit a String, not empty nor null
+	 * @param products a List or Product, not null
+	 * @param quantities a List or int, not null
 	 */
 	public Order(String code, Date dateAndTime, String clientID, String restNit, List<Product> products,
 			List<Integer> quantities) {
@@ -135,7 +135,11 @@ public class Order {
 		this.state = state;
 	}
 
-/*	@Override
+	@Override
+	/**
+	 * compares an Order to another given order, 
+	 * @return an int, positive it it's greater, negative if it's less, 0 if it's equal
+	 */
 	public int compareTo(Order o) {
 		int comp=0;
 		comp=getRestNit().compareTo(o.getRestNit());
@@ -158,5 +162,5 @@ public class Order {
 		
 		return comp;
 	}
-*/
+
 }

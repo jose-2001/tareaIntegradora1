@@ -1,7 +1,7 @@
 package model;
 
 
-public class Product {
+public class Product implements Comparable<Product>{
 
 	//attributes
 	private String code;
@@ -14,11 +14,12 @@ public class Product {
 	//methods 
 	
 	/**
-	 * @param cd
-	 * @param n
-	 * @param d
-	 * @param ct
-	 * @param rn
+	 * creates an instance of the class Product
+	 * @param cd  a String, not empty nor null
+	 * @param n  a String, not empty nor null
+	 * @param d a String, not empty nor null
+	 * @param ct a double, positive
+	 * @param rn a String, not empty nor null
 	 */
 	public Product(String cd, String n, String d, double ct, String rn) {
 		code = cd;
@@ -106,6 +107,14 @@ public class Product {
 	 */
 	public void setRestNit(String restNit) {
 		this.restNit = restNit;
+	}
+
+
+	@Override
+	public int compareTo(Product o) {
+		int comp=0;
+		comp=getCode().compareTo(o.getCode());
+		return comp;
 	}	
 	
 }

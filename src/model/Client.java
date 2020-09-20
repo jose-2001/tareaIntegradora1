@@ -17,11 +17,12 @@ public class Client {
 	private String address;
 	private IdType idType;
 	/**
-	 * @param idn
-	 * @param fn
-	 * @param p
-	 * @param a
-	 * @param idt
+	 * creates an instance of the class Client
+	 * @param idn a String, not empty nor null
+	 * @param fn a String, not empty nor null
+	 * @param p a String, not empty nor null
+	 * @param a a String, not empty nor null
+	 * @param idt an int, 1,2,3 or 4
 	 */
 	public Client(String idn, String fn, String sn,String p, String a, int idt) {
 		idNum = idn;

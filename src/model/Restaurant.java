@@ -50,7 +50,7 @@ public class Restaurant {
 	}
 
 	/**
-	 * @param adminName the adminName to set
+	 * @param an the adminName to set
 	 */
 	public void setAdminName(String an) {
 		adminName = an;
