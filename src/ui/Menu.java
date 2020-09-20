@@ -1145,7 +1145,7 @@ public class Menu {
 	 */
 	public void importClients() {
 		System.out.println("The file from which you wish to import must have the following format:");
-		System.out.println("<ClientIDNumber>|<ClientFirst>|<ClientSurname>|<ClientPhone>|<ClientAddress>|<ClientIDType(number 1-4)>");
+		System.out.println("<ClientIDNumber>|<ClientFirstName>|<ClientSurname>|<ClientPhone>|<ClientAddress>|<ClientIDType(number 1-4)>");
 		System.out.println("Please type the name of the file you wish to import Clients from");
 		String fn=sc.nextLine();
 		try {
