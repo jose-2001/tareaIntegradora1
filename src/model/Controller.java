@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.io.BufferedReader;
@@ -34,6 +35,8 @@ public class Controller {
 	public static final String ORDERS_FILE_NAME = "data/orders.ord";
 	public static final String PRODUCTS_FILE_NAME = "data/products.pro";
 	public static final String CSV_EXPORT_FILE_NAME = "data/ordersReport.csv";
+	public static final String DATE_FORMAT = "dd/mm/yyyy"; 
+	public static final String IMPORT_SEPARATOR = ",";
 
 	// relations
 
@@ -58,6 +61,7 @@ public class Controller {
 				loadRestaurants();
 			} catch (IOException ioe) {
 				System.err.println("Restaurant data could not be loaded properly");
+				ioe.printStackTrace();
 			}
 			catch (ClassNotFoundException cnfe)
 			{
@@ -117,7 +121,7 @@ public class Controller {
 	private void loadRestaurants() throws IOException, ClassNotFoundException {
 		File f = new File(RESTAURANTS_FILE_NAME);
 	      ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
-	      restaurants = (ArrayList<Restaurant>)ois.readObject();
+	      restaurants = (List<Restaurant>)ois.readObject();
 	      ois.close();
 	}
 	/**
@@ -265,7 +269,7 @@ public class Controller {
 		}
 		else {
 			int i =0;
-			while(toAdd.getName().compareTo(restaurants.get(i).getName())>0)
+			while(i<restaurants.size()&&toAdd.getName().compareTo(restaurants.get(i).getName())>0)
 			{
 				i++;
 			}
@@ -324,7 +328,7 @@ public class Controller {
 		}
 		else {
 			int i =0;
-			while(toAdd.getCode().compareTo(products.get(i).getCode())>0)
+			while(i<products.size()&&toAdd.getCode().compareTo(products.get(i).getCode())>0)
 			{
 				i++;
 			}
@@ -366,11 +370,11 @@ public class Controller {
 		}
 		else {
 			int i =0;
-			while(toAdd.getSurName().compareTo(clients.get(i).getSurName())>0)
+			while(i<clients.size()&&toAdd.getSurName().compareTo(clients.get(i).getSurName())>0)
 			{
 				i++;
 			}
-			while(toAdd.getFirstName().compareTo(clients.get(i).getFirstName())>0)
+			while(i<clients.size()&&toAdd.getFirstName().compareTo(clients.get(i).getFirstName())>0)
 			{
 				i++;
 			}
@@ -937,6 +941,7 @@ public class Controller {
 	 */
 	public String getOrderInfoText(char s, Order o){
 		String result="";
+		DateFormat df = new SimpleDateFormat(DATE_FORMAT);
 		result=o.getCode()+s+o.getState()+s+o.getRestNit()+s;
 		Restaurant or =null;
 		for (int i = 0; i < restaurants.size(); i++) {
@@ -954,7 +959,7 @@ public class Controller {
 			}
 		}
 		result+=oc.getIdNum()+s+oc.getIdType()+s+oc.getAddress()+s+oc.getFirstName()+s+oc.getSurName()+s+oc.getPhone()+s
-				+o.getDateAndTime()+s;
+				+df.format(o.getDateAndTime())+s;
 		
 		return result;
 	}
@@ -1035,7 +1040,7 @@ public class Controller {
 		BufferedReader br = new BufferedReader(new FileReader(fn));
 		String line=br.readLine();
 		do{
-			String[] parts = line.split("|");
+			String[] parts = line.split(IMPORT_SEPARATOR);
 		    registerRestaurant(parts[0],parts[1],parts[2]);
 		    line = br.readLine();   
 		}
@@ -1053,7 +1058,7 @@ public class Controller {
 		BufferedReader br = new BufferedReader(new FileReader(fn));
 		String line=br.readLine(); 
 		do{
-			String[] parts = line.split("|");
+			String[] parts = line.split(IMPORT_SEPARATOR);
 		    registerClient(parts[0],parts[1],parts[2],parts[3],parts[4],Integer.parseInt(parts[5]));
 		    line = br.readLine();   
 		}
@@ -1072,7 +1077,7 @@ public class Controller {
 		BufferedReader br = new BufferedReader(new FileReader(fn));
 		String line=br.readLine();
 		do{
-			String[] parts = line.split("|");
+			String[] parts = line.split(IMPORT_SEPARATOR);
 			otherCheckNit(parts[4]);
 		    registerProduct(parts[0],parts[1],parts[2],Double.parseDouble(parts[3]),parts[4]);
 		    line = br.readLine();   
@@ -1121,9 +1126,10 @@ public class Controller {
 		String lastOrderIdn="";
 		String lastOrderNitRes="";
 		Date lastOrderDate=null;
+		DateFormat df=new SimpleDateFormat(DATE_FORMAT);
 		do{
 			
-				String[] parts = line.split("|");
+				String[] parts = line.split(IMPORT_SEPARATOR);
 				String currentOrderCode=parts[0];
 				if(checkOrdCode(parts[0]))
 				{
@@ -1161,7 +1167,6 @@ public class Controller {
 					lastOrderCode=currentOrderCode;
 					lastOrderIdn=parts[5];
 					lastOrderNitRes=parts[2];
-					SimpleDateFormat df = new SimpleDateFormat();
 					try {
 						lastOrderDate=df.parse(parts[11]);
 					} catch (ParseException e) {

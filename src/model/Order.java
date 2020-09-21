@@ -1,10 +1,16 @@
 package model;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class Order implements Comparable<Order>{
+public class Order implements Serializable,Comparable<Order>{
 
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	enum State
 	{
 		SOLICITED, IN_PROGRESS,SENT,DELIVERED
