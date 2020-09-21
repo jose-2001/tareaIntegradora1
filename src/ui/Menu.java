@@ -1208,16 +1208,7 @@ public class Menu {
 		catch (IOException e) {
 			System.err.println(e.getStackTrace());
 			System.err.println("Order data could not be imported or saved properly");
-		} catch (ProductDoesNotExistException e) {
-			System.err.println("A product with this code is not registered");
-			e.printStackTrace();
-		} catch (ClientDoesNotExistException e) {
-			System.err.println("A client with this ID number is not registered");
-			e.printStackTrace();
-		} catch (RestaurantDoesNotExistException e) {
-			System.err.println("A restaurant with this NIT is not registered");
-			e.printStackTrace();
-		} catch (OrderAlreadyExistsException e) {
+		}  catch (OrderAlreadyExistsException e) {
 			System.err.println("An order with this code is already registered");
 			e.printStackTrace();
 		}

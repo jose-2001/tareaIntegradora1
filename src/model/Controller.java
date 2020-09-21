@@ -1092,8 +1092,26 @@ public class Controller {
 	 * @throws RestaurantDoesNotExistException if a Restaurant with the NIT from an Order being imported cannot be found
 	 * @throws OrderAlreadyExistsException if an order with the code of an order being imported already exists
 	 */
-	public void importOrders(String fn) throws FileNotFoundException, IOException, ProductDoesNotExistException,
-	ClientDoesNotExistException, RestaurantDoesNotExistException, OrderAlreadyExistsException {
+	public void importOrders(String fn) throws FileNotFoundException, IOException, OrderAlreadyExistsException {
+		/*
+		 * 0<OrderCode>|
+		 * 1<OrderState>|
+		 * 2<RestaurantNit>|
+		 * 3<RestaurantAdminName>|
+		 * 4<RestaurantName>|
+		 * 5<ClientIDNumber>|
+		 * 6<ClientIDType>|
+		 * 7<ClientAddress>|
+		 * 8<ClientFirstName>|
+		 * 9<Client Surname>|
+		 * 10<ClientPhone>|
+		 * 11<DateOfOrder>|
+		 * 12<ProductCode>|
+		 * 13<ProductQuantity>|
+		 * 14<ProductCost>|
+		 * 15<ProductName>|
+		 * 16<ProductDescription>");
+		 */
 		@SuppressWarnings("resource")
 		BufferedReader br = new BufferedReader(new FileReader(fn));
 		List<String> codes = new ArrayList<String>();
@@ -1107,22 +1125,26 @@ public class Controller {
 			
 				String[] parts = line.split("|");
 				String currentOrderCode=parts[0];
-				if(!checkProdCode(parts[12]))
-				{
-					throw new ProductDoesNotExistException();
-				}
-				if(!checkId(parts[5]))
-				{
-					throw new ClientDoesNotExistException();
-				}
-				if(!checkNit(parts[2]))
-				{
-					throw new RestaurantDoesNotExistException();
-				}
 				if(checkOrdCode(parts[0]))
 				{
 					throw new OrderAlreadyExistsException();
 				}
+				if(!checkNit(parts[2]))
+				{
+					//String name, String nit, String adminName
+					registerRestaurant(parts[4],parts[2],parts[3]);
+				}
+				if(!checkProdCode(parts[12]))
+				{
+					//String name, String code, String description, double cost, String restNit
+					registerProduct(parts[15],parts[12],parts[16],Double.parseDouble(parts[14]),parts[2]);
+				}
+				if(!checkId(parts[5]))
+				{
+					//String idn, String fn,String sn, String p, String a, int idt
+					registerClient(parts[5],parts[8],parts[9],parts[10],parts[7],Integer.parseInt(parts[6]));
+				}
+				
 				
 				if(!(currentOrderCode.equals(lastOrderCode))&&!(lastOrderCode.equals("")))
 				{
