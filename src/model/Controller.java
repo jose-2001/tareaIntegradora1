@@ -76,6 +76,7 @@ public class Controller {
 				loadClients();
 			} catch (IOException ioe) {
 				System.err.println("Client data could not be loaded properly");
+				ioe.printStackTrace();
 			}
 			catch (ClassNotFoundException cnfe)
 			{
@@ -90,6 +91,7 @@ public class Controller {
 				loadProducts();
 			} catch (IOException ioe) {
 				System.err.println("Product data could not be loaded properly");
+				ioe.printStackTrace();
 			}
 			catch (ClassNotFoundException cnfe)
 			{
@@ -104,6 +106,7 @@ public class Controller {
 				loadOrders();
 			} catch (IOException ioe) {
 				System.err.println("Order data could not be loaded properly");
+				ioe.printStackTrace();
 			}
 			catch (ClassNotFoundException cnfe)
 			{
@@ -489,7 +492,9 @@ public class Controller {
 		for (int i = 0; i < restaurants.size(); i++) {
 			if(restaurants.get(i).getNit().equals(restNit))
 			{
-				restaurants.get(i).setAdminName(newAdminName);
+				Restaurant newData=restaurants.get(i);
+				newData.setAdminName(newAdminName);
+				restaurants.set(i,newData);
 			}
 		}
 		saveRestaurants();
@@ -504,7 +509,9 @@ public class Controller {
 		for (int i = 0; i < restaurants.size(); i++) {
 			if(restaurants.get(i).getNit().equals(restNit))
 			{
-				restaurants.get(i).setName(newRestName);
+				Restaurant newData=restaurants.get(i);
+				newData.setName(newRestName);
+				restaurants.set(i,newData);
 			}
 		}
 		saveRestaurants();
@@ -519,19 +526,25 @@ public class Controller {
 		for (int i = 0; i < orders.size(); i++) {
 			if(orders.get(i).getRestNit().equals(restNit))
 			{
-				orders.get(i).setRestNit(newRestNit);
+				Order newData=orders.get(i);
+				newData.setRestNit(newRestNit);
+				orders.set(i,newData);
 			}
 		}
 		for (int i = 0; i < products.size(); i++) {
 			if(products.get(i).getRestNit().equals(restNit))
 			{
-				products.get(i).setRestNit(newRestNit);
+				Product newData=products.get(i);
+				newData.setRestNit(newRestNit);
+				products.set(i,newData);
 			}
 		}
 		for (int i = 0; i < restaurants.size(); i++) {
 			if(restaurants.get(i).getNit().equals(restNit))
 			{
-				restaurants.get(i).setNit(newRestNit);
+				Restaurant newData=restaurants.get(i);
+				newData.setNit(newRestNit);
+				restaurants.set(i,newData);
 			}
 		}
 		saveOrders();
@@ -548,14 +561,28 @@ public class Controller {
 		for (int i = 0; i < orders.size(); i++) {
 			for (int j = 0; j < orders.size(); j++) {
 				if (orders.get(i).getProducts().get(j).getCode().equals(code)) {
-					orders.get(i).getProducts().get(j).setCode(newCode);
+					
+					Product newData=orders.get(i).getProducts().get(j);
+					newData.setCode(newCode);
+					List<Product> newOrderProducts=orders.get(i).getProducts();
+					for (int k = 0; k < newOrderProducts.size(); k++) {
+						if(newOrderProducts.get(k).getCode().equals(code))
+						{
+							newOrderProducts.set(k,newData);
+						}
+					}
+					Order newOrderWithNewData = orders.get(i);
+					newOrderWithNewData.setProducts(newOrderProducts);
+					orders.set(i,newOrderWithNewData);
 				}
 			}
 		}
 		for (int i = 0; i < products.size(); i++) {
 			if(products.get(i).getCode().equals(code))
 			{
-				products.get(i).setCode(newCode);
+				Product newData=products.get(i);
+				newData.setCode(newCode);
+				products.set(i,newData);
 			}
 		}
 		saveOrders();
@@ -571,7 +598,9 @@ public class Controller {
 		for (int i = 0; i < products.size(); i++) {
 			if(products.get(i).getCode().equals(code))
 			{
-				products.get(i).setCost(newCost);
+				Product newData=products.get(i);
+				newData.setCost(newCost);
+				products.set(i,newData);
 			}
 		}
 		saveProducts();
@@ -586,7 +615,9 @@ public class Controller {
 		for (int i = 0; i < products.size(); i++) {
 			if(products.get(i).getCode().equals(code))
 			{
-				products.get(i).setDescription(newDesc);
+				Product newData=products.get(i);
+				newData.setDescription(newDesc);
+				products.set(i,newData);
 			}
 		}
 		saveProducts();
@@ -601,7 +632,9 @@ public class Controller {
 		for (int i = 0; i < products.size(); i++) {
 			if(products.get(i).getCode().equals(code))
 			{
-				products.get(i).setName(newName);
+				Product newData=products.get(i);
+				newData.setName(newName);
+				products.set(i,newData);
 			}
 		}
 		saveProducts();
@@ -616,7 +649,9 @@ public class Controller {
 		for (int i = 0; i < products.size(); i++) {
 			if(products.get(i).getCode().equals(code))
 			{
-				products.get(i).setRestNit(newRestNit);
+				Product newData=products.get(i);
+				newData.setRestNit(newRestNit);
+				products.set(i,newData);
 			}
 		}
 		saveProducts();
@@ -632,7 +667,9 @@ public class Controller {
 		for (int i = 0; i < clients.size(); i++) {
 			if(clients.get(i).getIdNum().equals(idn))
 			{
-				clients.get(i).setAddress(newClientAddress);
+				Client newData=clients.get(i);
+				newData.setAddress(newClientAddress);
+				clients.set(i,newData);
 			}
 		}
 		saveClients();
@@ -647,7 +684,9 @@ public class Controller {
 		for (int i = 0; i < orders.size(); i++) {
 			if(clients.get(i).getIdNum().equals(idn))
 			{
-				clients.get(i).setFirstName(newClientFirstName);
+				Client newData=clients.get(i);
+				newData.setFirstName(newClientFirstName);
+				clients.set(i,newData);
 			}
 		}
 		saveClients();
@@ -662,7 +701,9 @@ public class Controller {
 		for (int i = 0; i < clients.size(); i++) {
 			if(clients.get(i).getIdNum().equals(idn))
 			{
-				clients.get(i).setSurName(newClientSurname);
+				Client newData=clients.get(i);
+				newData.setSurName(newClientSurname);
+				clients.set(i,newData);
 			}
 		}
 		saveClients();
@@ -677,14 +718,18 @@ public class Controller {
 		for (int i = 0; i < orders.size(); i++) {
 			if(orders.get(i).getClientID().equals(idn))
 			{
-				orders.get(i).setClientID(newClientIdNum);
+				Order newOrderWithNewData=orders.get(i);
+				newOrderWithNewData.setClientID(newClientIdNum);
+				orders.set(i,newOrderWithNewData);
 			}
 		}
 
 		for (int i = 0; i < clients.size(); i++) {
 			if(clients.get(i).getIdNum().equals(idn))
 			{
-				clients.get(i).setIdNum(newClientIdNum);
+				Client newData=clients.get(i);
+				newData.setIdNum(newClientIdNum);
+				clients.set(i,newData);
 			}
 		}
 		saveOrders();
@@ -693,14 +738,16 @@ public class Controller {
 	/**
 	 * updates a client's ID Type
 	 * @param idn a String, not null, the ID number of the client to update
-	 * @param idt
+	 * @param newIdt a String, not null, the new ID type of the client
 	 * @throws IOException if it cannot write the file properly while saving after updating the client
 	 */
-	public void updateClientIdType(String idn, int idt)  throws IOException {
+	public void updateClientIdType(String idn, int newIdt)  throws IOException {
 		for (int i = 0; i < clients.size(); i++) {
 			if(clients.get(i).getIdNum().equals(idn))
 			{
-				clients.get(i).setIdType(idt);
+				Client newData=clients.get(i);
+				newData.setIdType(newIdt);
+				clients.set(i,newData);
 			}
 		}
 		saveClients();
@@ -715,7 +762,9 @@ public class Controller {
 		for (int i = 0; i < clients.size(); i++) {
 			if(clients.get(i).getIdNum().equals(idn))
 			{
-				clients.get(i).setPhone(newClientPhone);
+				Client newData=clients.get(i);
+				newData.setPhone(newClientPhone);
+				clients.set(i,newData);
 			}
 		}
 		saveClients();
@@ -745,7 +794,9 @@ public class Controller {
 		for (int i = 0; i < orders.size(); i++) {
 			if(orders.get(i).getCode().equals(code))
 			{
-				orders.get(i).setClientID(newOrderClientID);
+				Order newData=orders.get(i);
+				newData.setClientID(newOrderClientID);
+				orders.set(i,newData);
 			}
 		}
 		saveOrders();
@@ -789,8 +840,10 @@ public class Controller {
 		for (int i = 0; i < orders.size(); i++) {
 			if(orders.get(i).getCode().equals(code))
 			{
-				orders.get(i).setProducts(prodsOfOrder);
-				orders.get(i).setQuantities(quantities);
+				Order newData=orders.get(i);
+				newData.setProducts(prodsOfOrder);
+				newData.setQuantities(quantities);
+				orders.set(i,newData);				
 			}
 		}
 		saveOrders();
@@ -805,7 +858,9 @@ public class Controller {
 		for (int i = 0; i < orders.size(); i++) {
 			if(orders.get(i).getCode().equals(code))
 			{
-				orders.get(i).setRestNit(newRestNit);
+				Order newData=orders.get(i);
+				newData.setRestNit(newRestNit);
+				orders.set(i,newData);
 			}
 		}
 		saveOrders();
@@ -890,7 +945,9 @@ public class Controller {
 		for (int i = 0; i < orders.size(); i++) {
 			if(orders.get(i).getCode().equals(code))
 			{
-				orders.get(i).setState(newState);
+				Order newData=orders.get(i);
+				newData.setState(newState);
+				orders.set(i,newData);
 			}
 		}
 		saveOrders();

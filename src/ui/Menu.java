@@ -237,10 +237,10 @@ public class Menu {
 		int idt;
 		boolean valid = false;
 		do {
-			System.out.println("Type 1 if the new client's identifies with an Identity Card");
-			System.out.println("Type 2 if the new client's identifies with a Citizenship Card");
-			System.out.println("Type 3 if the new client's identifies with a Foreigner Card");
-			System.out.println("Type 4 if the new client's identifies with a Passport");
+			System.out.println("Type 1 if the new client identifies with an Identity Card");
+			System.out.println("Type 2 if the new client identifies with a Citizenship Card");
+			System.out.println("Type 3 if the new client identifies with a Foreigner Card");
+			System.out.println("Type 4 if the new client identifies with a Passport");
 			idt = Integer.parseInt(sc.nextLine());
 			if (idt == 1 | idt == 2 | idt == 3 | idt == 4) {
 				valid = true;
@@ -717,7 +717,7 @@ public class Menu {
 						contin2 = false;
 						break;
 					}
-				} while (contin2);
+				} while (!contin2);
 				do {
 					contin2 = true;
 					System.out.println("Do you wish to update more information about this Client?");
@@ -736,7 +736,7 @@ public class Menu {
 						contin2 = false;
 						break;
 					}
-				} while (contin2);
+				} while (!contin2);
 			}
 		} catch (ClientDoesNotExistException e) {
 			System.err.println("A client with that identification number is not registered");
@@ -803,23 +803,23 @@ public class Menu {
 	 * @param idn a String, not null the ID number of the client to update
 	 */
 	public void updateClientIdt(String idn) {
-		int idt;
+		int newIdt;
 		boolean valid=false;
 		do {
 		System.out.println("Specify the new ID type of the client");
-		System.out.println("Type 1 if the new client's identifies with an Identity Card");
-		System.out.println("Type 2 if the new client's identifies with a Citizenship Card");
-		System.out.println("Type 3 if the new client's identifies with a Foreigner Card");
-		System.out.println("Type 4 if the new client's identifies with a Passport");
-		idt = Integer.parseInt(sc.nextLine());
-		if (idt == 1 | idt == 2 | idt == 3 | idt == 4) {
+		System.out.println("Type 1 if the new client identifies with an Identity Card");
+		System.out.println("Type 2 if the new client identifies with a Citizenship Card");
+		System.out.println("Type 3 if the new client identifies with a Foreigner Card");
+		System.out.println("Type 4 if the new client identifies with a Passport");
+		newIdt = Integer.parseInt(sc.nextLine());
+		if (newIdt == 1 | newIdt == 2 | newIdt == 3 | newIdt == 4) {
 			valid = true;
 		} else {
 			System.out.println("Type in a valid option (1-4)");
 		}
 	} while (!valid);
 		try {
-			control.updateClientIdType(idn, idt);
+			control.updateClientIdType(idn, newIdt);
 			System.out.println("Client ID type updated successfully");
 		} catch (IOException e) {
 			System.err.println("Client data could not be saved properly");
