@@ -35,7 +35,7 @@ public class Controller {
 	public static final String ORDERS_FILE_NAME = "data/orders.ord";
 	public static final String PRODUCTS_FILE_NAME = "data/products.pro";
 	public static final String CSV_EXPORT_FILE_NAME = "data/ordersReport.csv";
-	public static final String INPUT_DATE_FORMAT = "dd/mm/yyyy"; 
+	public static final String INPUT_DATE_FORMAT = "dd/MM/yyyy"; 
 	public static final String IMPORT_SEPARATOR = ",";
 	public static final String OUTPUT_DATE_FORMAT = "dd/MM/yyyy hh:mm:ss";
 
@@ -960,7 +960,7 @@ public class Controller {
 					{
 						if (currentOr.getProducts().get(k).equals(currentProduct))
 						{
-							currentProductQuantity =k;
+							currentProductQuantity =currentOr.getQuantities().get(k);
 						}
 					}
 					String prodInfoText =currentProduct.getCode()+s
@@ -979,7 +979,7 @@ public class Controller {
 	 */
 	public String getOrderInfoText(char s, Order o){
 		String result="";
-		DateFormat df = new SimpleDateFormat(INPUT_DATE_FORMAT);
+		DateFormat df = new SimpleDateFormat(OUTPUT_DATE_FORMAT);
 		result=o.getCode()+s+o.getState()+s+o.getRestNit()+s;
 		Restaurant or =null;
 		for (int i = 0; i < restaurants.size(); i++) {

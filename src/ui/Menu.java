@@ -463,7 +463,7 @@ public class Menu {
 						contin2 = false;
 						break;
 					}
-				} while (contin2);
+				} while (!contin2);
 				do {
 					contin2 = true;
 					System.out.println("Do you wish to update more information about this restaurant?");
@@ -482,7 +482,7 @@ public class Menu {
 						contin2 = false;
 						break;
 					}
-				} while (contin2);
+				} while (!contin2);
 			}
 		} catch (RestaurantDoesNotExistException e) {
 			System.err.println("A restaurant with that NIT is not registered");
@@ -571,7 +571,7 @@ public class Menu {
 						contin2 = false;
 						break;
 					}
-				} while (contin2);
+				} while (!contin2);
 				do {
 					contin2 = true;
 					System.out.println("Do you wish to update more information about this restaurant?");
@@ -877,7 +877,7 @@ public class Menu {
 						contin2 = false;
 						break;
 					}
-				} while (contin2);
+				} while (!contin2);
 				do {
 					contin2 = true;
 					System.out.println("Do you wish to update more information about this restaurant?");
@@ -896,7 +896,7 @@ public class Menu {
 						contin2 = false;
 						break;
 					}
-				} while (contin2);
+				} while (!contin2);
 			}
 		} 
 		catch (OrderDoesNotExistException e)
