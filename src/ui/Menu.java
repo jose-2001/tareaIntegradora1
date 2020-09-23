@@ -314,7 +314,7 @@ public class Menu {
 					} else {
 						System.out.println("Please type in a valid amount (integer greater than 0)");
 					}
-				} while (contin2);
+				} while (!contin2);
 				System.out.println("Is there another product in this order that is to be added?");
 				System.out.println("Type 1 if yes");
 				System.out.println("Type 2 if no");
@@ -329,11 +329,11 @@ public class Menu {
 					System.out.println("Type a valid option");
 					break;
 				}
-				Date date = new Date();
-				String code = getAlphaNumericString(10);
-				control.registerOrder(code, idn, nitRes, codes, quantities, date);
-				System.out.println("Order registered successfully");
 			}
+			Date date = new Date();
+			String code = getAlphaNumericString(10);
+			control.registerOrder(code, idn, nitRes, codes, quantities, date);
+			System.out.println("Order registered successfully");
 		} catch (ClientDoesNotExistException e) {
 			System.err.println("A client with that ID number is not registered");
 		} catch (RestaurantDoesNotExistException e) {

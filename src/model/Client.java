@@ -33,7 +33,7 @@ public class Client implements Serializable{
 	 */
 	public Client(String idn, String fn, String sn,String p, String a, int idt) {
 		idNum = idn;
-		firstName = fn;
+		this.firstName = fn;
 		surName=sn;
 		phone = p;
 		address = a;

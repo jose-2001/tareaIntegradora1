@@ -35,8 +35,9 @@ public class Controller {
 	public static final String ORDERS_FILE_NAME = "data/orders.ord";
 	public static final String PRODUCTS_FILE_NAME = "data/products.pro";
 	public static final String CSV_EXPORT_FILE_NAME = "data/ordersReport.csv";
-	public static final String DATE_FORMAT = "dd/mm/yyyy"; 
+	public static final String INPUT_DATE_FORMAT = "dd/mm/yyyy"; 
 	public static final String IMPORT_SEPARATOR = ",";
+	public static final String OUTPUT_DATE_FORMAT = "dd/MM/yyyy hh:mm:ss";
 
 	// relations
 
@@ -681,12 +682,10 @@ public class Controller {
 	 * @throws IOException if it cannot write the file properly while saving after updating the client
 	 */
 	public void updateClientFirstName(String idn, String newClientFirstName) throws IOException {
-		for (int i = 0; i < orders.size(); i++) {
+		for (int i = 0; i < clients.size(); i++) {
 			if(clients.get(i).getIdNum().equals(idn))
 			{
-				Client newData=clients.get(i);
-				newData.setFirstName(newClientFirstName);
-				clients.set(i,newData);
+				clients.get(i).setFirstName(newClientFirstName);	
 			}
 		}
 		saveClients();
@@ -701,9 +700,7 @@ public class Controller {
 		for (int i = 0; i < clients.size(); i++) {
 			if(clients.get(i).getIdNum().equals(idn))
 			{
-				Client newData=clients.get(i);
-				newData.setSurName(newClientSurname);
-				clients.set(i,newData);
+				clients.get(i).setSurName(newClientSurname);
 			}
 		}
 		saveClients();
@@ -718,18 +715,14 @@ public class Controller {
 		for (int i = 0; i < orders.size(); i++) {
 			if(orders.get(i).getClientID().equals(idn))
 			{
-				Order newOrderWithNewData=orders.get(i);
-				newOrderWithNewData.setClientID(newClientIdNum);
-				orders.set(i,newOrderWithNewData);
+				orders.get(i).setClientID(newClientIdNum);
 			}
 		}
 
 		for (int i = 0; i < clients.size(); i++) {
 			if(clients.get(i).getIdNum().equals(idn))
 			{
-				Client newData=clients.get(i);
-				newData.setIdNum(newClientIdNum);
-				clients.set(i,newData);
+				clients.get(i).setIdNum(newClientIdNum);
 			}
 		}
 		saveOrders();
@@ -745,9 +738,7 @@ public class Controller {
 		for (int i = 0; i < clients.size(); i++) {
 			if(clients.get(i).getIdNum().equals(idn))
 			{
-				Client newData=clients.get(i);
-				newData.setIdType(newIdt);
-				clients.set(i,newData);
+				clients.get(i).setIdType(newIdt);
 			}
 		}
 		saveClients();
@@ -762,9 +753,7 @@ public class Controller {
 		for (int i = 0; i < clients.size(); i++) {
 			if(clients.get(i).getIdNum().equals(idn))
 			{
-				Client newData=clients.get(i);
-				newData.setPhone(newClientPhone);
-				clients.set(i,newData);
+				clients.get(i).setPhone(newClientPhone);
 			}
 		}
 		saveClients();
@@ -794,9 +783,7 @@ public class Controller {
 		for (int i = 0; i < orders.size(); i++) {
 			if(orders.get(i).getCode().equals(code))
 			{
-				Order newData=orders.get(i);
-				newData.setClientID(newOrderClientID);
-				orders.set(i,newData);
+				orders.get(i).setClientID(newOrderClientID);
 			}
 		}
 		saveOrders();
@@ -840,10 +827,8 @@ public class Controller {
 		for (int i = 0; i < orders.size(); i++) {
 			if(orders.get(i).getCode().equals(code))
 			{
-				Order newData=orders.get(i);
-				newData.setProducts(prodsOfOrder);
-				newData.setQuantities(quantities);
-				orders.set(i,newData);				
+				orders.get(i).setProducts(prodsOfOrder);
+				orders.get(i).setQuantities(quantities);				
 			}
 		}
 		saveOrders();
@@ -858,9 +843,7 @@ public class Controller {
 		for (int i = 0; i < orders.size(); i++) {
 			if(orders.get(i).getCode().equals(code))
 			{
-				Order newData=orders.get(i);
-				newData.setRestNit(newRestNit);
-				orders.set(i,newData);
+				orders.get(i).setRestNit(newRestNit);
 			}
 		}
 		saveOrders();
@@ -945,9 +928,7 @@ public class Controller {
 		for (int i = 0; i < orders.size(); i++) {
 			if(orders.get(i).getCode().equals(code))
 			{
-				Order newData=orders.get(i);
-				newData.setState(newState);
-				orders.set(i,newData);
+				orders.get(i).setState(newState);
 			}
 		}
 		saveOrders();
@@ -998,7 +979,7 @@ public class Controller {
 	 */
 	public String getOrderInfoText(char s, Order o){
 		String result="";
-		DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+		DateFormat df = new SimpleDateFormat(INPUT_DATE_FORMAT);
 		result=o.getCode()+s+o.getState()+s+o.getRestNit()+s;
 		Restaurant or =null;
 		for (int i = 0; i < restaurants.size(); i++) {
@@ -1015,7 +996,23 @@ public class Controller {
 				oc=clients.get(i);
 			}
 		}
-		result+=oc.getIdNum()+s+oc.getIdType()+s+oc.getAddress()+s+oc.getFirstName()+s+oc.getSurName()+s+oc.getPhone()+s
+		result+=oc.getIdNum()+s;
+		switch(oc.getIdType()) {
+		case 1:
+			result+="IC";
+			break;
+		case 2:
+			result+="CC";
+			break;
+		case 3:
+			result+="FC";
+			break;
+		case 4:
+			result+="P";
+			break;
+		}
+
+		result+=s+oc.getAddress()+s+oc.getFirstName()+s+oc.getSurName()+s+oc.getPhone()+s
 				+df.format(o.getDateAndTime())+s;
 		
 		return result;
@@ -1045,8 +1042,23 @@ public class Controller {
 		for (int i = 0; i < clientsOrderedByPhone .size(); i++) {
 			Client cc = clientsOrderedByPhone.get(i);
 			msg+=(i+1)+"Phone: "+cc.getPhone()+". ID Number: "
-					+cc.getIdNum()+". ID Type: "+cc.getIdType()
-					+". Name: "+cc.getFirstName()+" "+cc.getSurName()
+					+cc.getIdNum()+". ID Type: ";
+			switch(cc.getIdType()) {
+			case 1:
+				msg+="IC";
+				break;
+			case 2:
+				msg+="CC";
+				break;
+			case 3:
+				msg+="FC";
+				break;
+			case 4:
+				msg+="P";
+				break;
+			}
+
+			msg+=". Name: "+cc.getFirstName()+" "+cc.getSurName()
 					+". Address: "+cc.getAddress()+"\n";
 		}
 		return msg;
@@ -1183,7 +1195,7 @@ public class Controller {
 		String lastOrderIdn="";
 		String lastOrderNitRes="";
 		Date lastOrderDate=null;
-		DateFormat df=new SimpleDateFormat(DATE_FORMAT);
+		DateFormat df=new SimpleDateFormat(INPUT_DATE_FORMAT);
 		do{
 			
 				String[] parts = line.split(IMPORT_SEPARATOR);
