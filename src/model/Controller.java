@@ -457,12 +457,14 @@ public class Controller {
 	 * checks if the products of the given ArrayList belong to the same restaurant 
 	 * @param nitRes a String, not empty not null, the NIT of the restaurant to which the products should belong to
 	 * @param prodsOfOrder an ArrayList of Product, not empty nor null
-	 * @throws productsAreNotOfTheSameRestaurantException  if the products do not belong to the restaurant
+	 * @throws ProductsAreNotOfTheSameRestaurantException  if the products do not belong to the restaurant
 	 */
 	public void checkProdsOfSameRes(String nitRes, ArrayList<Product> prodsOfOrder) throws ProductsAreNotOfTheSameRestaurantException {
 		for (int i = 0; i < prodsOfOrder.size(); i++) {
 			if(!(prodsOfOrder.get(i).getRestNit().equals(nitRes)))
 			{
+				System.err.println(nitRes);
+				System.err.println(prodsOfOrder.get(i));
 				throw new ProductsAreNotOfTheSameRestaurantException();
 			}
 		}
@@ -470,6 +472,7 @@ public class Controller {
 	}
 	/**
 	 * checks if the given code already exists among the order codes of the orders already registered
+	 * @param code a String, the code to be checked
 	 * @return true if it exists, false if not
 	 */
 	public boolean checkIfCodeIsRepeated(String code) {
@@ -1140,7 +1143,7 @@ public class Controller {
 	 * @param fn a String, the name of the file to import
 	 * @throws FileNotFoundException if the file to import cannot be found
 	 * @throws IOException  if it cannot write the file properly while saving after importing the products
-	 * @throws RestaurantDoesNotExistException 
+	 * @throws RestaurantDoesNotExistException if there is not a restaurant registered with the imported code 
 	 */
 	public void importProducts(String fn)throws FileNotFoundException, IOException, RestaurantDoesNotExistException {
 		BufferedReader br = new BufferedReader(new FileReader(fn));
@@ -1161,9 +1164,6 @@ public class Controller {
 	 * @param fn a String, the name of the file to import
 	 * @throws FileNotFoundException if the file to import cannot be found
 	 * @throws IOException if it cannot write the file properly while saving after importing the orders
-	 * @throws ProductDoesNotExistException if a product from an Order being imported cannot be found
-	 * @throws ClientDoesNotExistException if a client from an Order being imported cannot be found
-	 * @throws RestaurantDoesNotExistException if a Restaurant with the NIT from an Order being imported cannot be found
 	 * @throws OrderAlreadyExistsException if an order with the code of an order being imported already exists
 	 */
 	public void importOrders(String fn) throws FileNotFoundException, IOException, OrderAlreadyExistsException {

@@ -120,6 +120,13 @@ public class Product implements Serializable, Comparable<Product>{
 		int comp=0;
 		comp=getCode().compareTo(o.getCode());
 		return comp;
+	}
+
+
+	@Override
+	public String toString() {
+		String msg="RestNit:"+getRestNit()+"|Code:"+code+"|Name:"+name;
+		return msg;
 	}	
 	
 }
